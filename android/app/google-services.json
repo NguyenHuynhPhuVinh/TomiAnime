@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "499071773864",
+    "project_id": "tomianime-382c0",
+    "storage_bucket": "tomianime-382c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499071773864:android:d12d7013f76db655c7e69d",
+        "android_client_info": {
+          "package_name": "com.tomisakae.anime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499071773864-2fk36ma99arvp3pd5ea2gnhn5f5filg1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvzPUUxbSdQ9SvFKmeL5zenDVu2b3O2oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499071773864-2fk36ma99arvp3pd5ea2gnhn5f5filg1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "499071773864-hnv0r0f25v9lghqup22e06h6e9hu23rk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.linkstory"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
