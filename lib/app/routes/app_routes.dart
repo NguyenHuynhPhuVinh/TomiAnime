@@ -4,19 +4,15 @@ part of 'app_pages.dart';
 abstract class Routes {
   Routes._();
   static const HOME = _Paths.HOME;
-  static const LIBRARY = _Paths.LIBRARY;
-  static const READER = _Paths.READER;
-  static const HISTORY = _Paths.HISTORY;
-  static const SETTINGS = _Paths.SETTINGS;
-  static const AI = _Paths.AI;
+  static const ANIME = _Paths.ANIME;
+  static const SEARCH = _Paths.SEARCH;
+  static const ACCOUNT = _Paths.ACCOUNT;
 }
 
 abstract class _Paths {
   _Paths._();
   static const HOME = '/home';
-  static const LIBRARY = '/library';
-  static const READER = '/reader';
-  static const HISTORY = '/history';
-  static const SETTINGS = '/settings';
-  static const AI = '/ai';
+  static const ANIME = '/anime';
+  static const SEARCH = '/search';
+  static const ACCOUNT = '/account';
 }

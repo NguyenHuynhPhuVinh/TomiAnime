@@ -1,16 +1,12 @@
 import 'package:get/get.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/library/bindings/library_binding.dart';
-import '../modules/library/views/library_view.dart';
-import '../modules/reader/bindings/reader_binding.dart';
-import '../modules/reader/views/reader_view.dart';
-import '../modules/history/bindings/history_binding.dart';
-import '../modules/history/views/history_view.dart';
-import '../modules/settings/bindings/settings_binding.dart';
-import '../modules/settings/views/settings_view.dart';
-import '../modules/ai/bindings/ai_binding.dart';
-import '../modules/ai/views/ai_view.dart';
+import '../modules/anime/bindings/anime_binding.dart';
+import '../modules/anime/views/anime_view.dart';
+import '../modules/search/bindings/search_binding.dart';
+import '../modules/search/views/search_view.dart';
+import '../modules/account/bindings/account_binding.dart';
+import '../modules/account/views/account_view.dart';
 
 part 'app_routes.dart';
 
@@ -26,29 +22,19 @@ class AppPages {
       binding: HomeBinding(),
     ),
     GetPage(
-      name: _Paths.LIBRARY,
-      page: () => const LibraryView(),
-      binding: LibraryBinding(),
+      name: _Paths.ANIME,
+      page: () => const AnimeView(),
+      binding: AnimeBinding(),
     ),
     GetPage(
-      name: _Paths.READER,
-      page: () => const ReaderView(),
-      binding: ReaderBinding(),
+      name: _Paths.SEARCH,
+      page: () => const SearchView(),
+      binding: SearchBinding(),
     ),
     GetPage(
-      name: _Paths.HISTORY,
-      page: () => const HistoryView(),
-      binding: HistoryBinding(),
-    ),
-    GetPage(
-      name: _Paths.SETTINGS,
-      page: () => const SettingsView(),
-      binding: SettingsBinding(),
-    ),
-    GetPage(
-      name: _Paths.AI,
-      page: () => const AiView(),
-      binding: AiBinding(),
+      name: _Paths.ACCOUNT,
+      page: () => const AccountView(),
+      binding: AccountBinding(),
     ),
   ];
 }

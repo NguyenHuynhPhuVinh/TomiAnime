@@ -11,11 +11,11 @@ void main() async {
   // Initialize Hive
   await Hive.initFlutter();
 
-  runApp(const LinkStoryApp());
+  runApp(const TomiAnimeApp());
 }
 
-class LinkStoryApp extends StatelessWidget {
-  const LinkStoryApp({super.key});
+class TomiAnimeApp extends StatelessWidget {
+  const TomiAnimeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class LinkStoryApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'LinkStory',
+          title: 'TomiAnime',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
               seedColor: Colors.blue,

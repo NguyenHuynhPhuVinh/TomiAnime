@@ -1,10 +1,8 @@
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
-import '../../library/controllers/library_controller.dart';
-import '../../reader/controllers/reader_controller.dart';
-import '../../ai/controllers/ai_controller.dart';
-import '../../history/controllers/history_controller.dart';
-import '../../settings/controllers/settings_controller.dart';
+import '../../anime/controllers/anime_controller.dart';
+import '../../search/controllers/search_controller.dart';
+import '../../account/controllers/account_controller.dart';
 
 class HomeBinding extends Bindings {
   @override
@@ -14,24 +12,16 @@ class HomeBinding extends Bindings {
     );
 
     // Đăng ký tất cả controller cho các tab trong HomeView
-    Get.lazyPut<LibraryController>(
-      () => LibraryController(),
+    Get.lazyPut<AnimeController>(
+      () => AnimeController(),
     );
 
-    Get.lazyPut<ReaderController>(
-      () => ReaderController(),
+    Get.lazyPut<AnimeSearchController>(
+      () => AnimeSearchController(),
     );
 
-    Get.lazyPut<AiController>(
-      () => AiController(),
-    );
-
-    Get.lazyPut<HistoryController>(
-      () => HistoryController(),
-    );
-
-    Get.lazyPut<SettingsController>(
-      () => SettingsController(),
+    Get.lazyPut<AccountController>(
+      () => AccountController(),
     );
   }
 }

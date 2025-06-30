@@ -1,10 +1,9 @@
 import 'package:get/get.dart';
 
-class SettingsController extends GetxController {
+class AnimeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // TODO: Khởi tạo cài đặt ứng dụng
   }
 
   @override

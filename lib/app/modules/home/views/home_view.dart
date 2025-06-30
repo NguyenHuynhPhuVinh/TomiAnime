@@ -6,11 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../controllers/home_controller.dart';
-import '../../library/views/library_view.dart';
-import '../../reader/views/reader_view.dart';
-import '../../ai/views/ai_view.dart';
-import '../../history/views/history_view.dart';
-import '../../settings/views/settings_view.dart';
+import '../../anime/views/anime_view.dart';
+import '../../search/views/search_view.dart';
+import '../../account/views/account_view.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
@@ -21,11 +19,9 @@ class HomeView extends GetView<HomeController> {
       body: Obx(() => IndexedStack(
         index: controller.currentIndex.value,
         children: const [
-          LibraryView(),
-          ReaderView(),
-          AiView(),
-          HistoryView(),
-          SettingsView(),
+          AnimeView(),
+          SearchView(),
+          AccountView(),
         ],
       )),
       bottomNavigationBar: _buildResponsiveNavBar(),
@@ -65,11 +61,9 @@ class HomeView extends GetView<HomeController> {
           child: Obx(() => Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildNavItem(0, Iconsax.book, 'Thư viện', true),
-              _buildNavItem(1, Iconsax.book_1, 'Đọc', true),
-              _buildNavItem(2, Iconsax.cpu, 'AI', true),
-              _buildNavItem(3, Iconsax.clock, 'Lịch sử', true),
-              _buildNavItem(4, Iconsax.setting_2, 'Cài đặt', true),
+              _buildNavItem(0, Iconsax.home, 'Trang chủ', true),
+              _buildNavItem(1, Iconsax.search_normal, 'Tìm kiếm', true),
+              _buildNavItem(2, Iconsax.profile_circle, 'Tài khoản', true),
             ],
           )),
         ),
@@ -109,28 +103,18 @@ class HomeView extends GetView<HomeController> {
               color: Theme.of(Get.context!).colorScheme.onSurface,
             tabs: [
               GButton(
-                icon: Iconsax.book,
-                text: 'Thư viện',
+                icon: Iconsax.home,
+                text: 'Trang chủ',
                 textStyle: TextStyle(fontSize: 12.sp),
               ),
               GButton(
-                icon: Iconsax.book_1,
-                text: 'Đọc truyện',
+                icon: Iconsax.search_normal,
+                text: 'Tìm kiếm',
                 textStyle: TextStyle(fontSize: 12.sp),
               ),
               GButton(
-                icon: Iconsax.cpu,
-                text: 'AI',
-                textStyle: TextStyle(fontSize: 12.sp),
-              ),
-              GButton(
-                icon: Iconsax.clock,
-                text: 'Lịch sử',
-                textStyle: TextStyle(fontSize: 12.sp),
-              ),
-              GButton(
-                icon: Iconsax.setting_2,
-                text: 'Cài đặt',
+                icon: Iconsax.profile_circle,
+                text: 'Tài khoản',
                 textStyle: TextStyle(fontSize: 12.sp),
               ),
             ],

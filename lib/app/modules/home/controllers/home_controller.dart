@@ -6,11 +6,9 @@ class HomeController extends GetxController {
   
   // Danh sách các tab
   final List<String> tabTitles = [
-    'Thư viện',
-    'Đọc truyện',
-    'AI',
-    'Lịch sử',
-    'Cài đặt'
+    'Trang chủ',
+    'Tìm kiếm',
+    'Tài khoản'
   ];
 
   // Thay đổi tab
