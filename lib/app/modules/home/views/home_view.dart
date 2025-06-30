@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -18,16 +17,18 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(() => IndexedStack(
-        index: controller.currentIndex.value,
-        children: const [
-          AnimeView(),
-          CardsView(),
-          AdventureView(),
-          GachaView(),
-          AccountView(),
-        ],
-      )),
+      body: Obx(
+        () => IndexedStack(
+          index: controller.currentIndex.value,
+          children: const [
+            AnimeView(),
+            CardsView(),
+            AdventureView(),
+            GachaView(),
+            AccountView(),
+          ],
+        ),
+      ),
       bottomNavigationBar: _buildResponsiveNavBar(),
     );
   }
@@ -45,154 +46,236 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildMobileNavBar() {
-    final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(Get.context!).scaffoldBackgroundColor,
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+        ),
         boxShadow: [
           BoxShadow(
+            offset: const Offset(0, -2),
             blurRadius: 20.r,
-            color: isDark
-                ? Colors.white.withOpacity(0.1)
-                : Colors.black.withOpacity(0.1),
-          )
+            color: Colors.purple.withOpacity(0.2),
+          ),
         ],
+        border: Border(
+          top: BorderSide(
+            color: Colors.purple.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
       ),
       child: SafeArea(
         child: Container(
-          height: 60.h,
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-          child: Obx(() => Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(0, Iconsax.home, 'Anime', true),
-              _buildNavItem(1, Iconsax.card, 'Thẻ Bài', true),
-              _buildNavItem(2, Iconsax.map, 'Phiêu Lưu', true),
-              _buildNavItem(3, Iconsax.gift, 'Gacha', true),
-              _buildNavItem(4, Iconsax.profile_circle, 'Tài khoản', true),
-            ],
-          )),
+          height: 75.h,
+          padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 6.h),
+          child: Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildGameNavItem(0, Iconsax.play, 'Anime', Colors.red, true),
+                _buildGameNavItem(
+                  1,
+                  Iconsax.card,
+                  'Cards',
+                  Colors.blue,
+                  true,
+                ),
+                _buildGameNavItem(
+                  2,
+                  Iconsax.map,
+                  'Quest',
+                  Colors.green,
+                  true,
+                ),
+                _buildGameNavItem(
+                  3,
+                  Iconsax.gift,
+                  'Gacha',
+                  Colors.purple,
+                  true,
+                ),
+                _buildGameNavItem(
+                  4,
+                  Iconsax.profile_circle,
+                  'Profile',
+                  Colors.orange,
+                  true,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTabletNavBar() {
-    final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(Get.context!).scaffoldBackgroundColor,
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+        ),
         boxShadow: [
           BoxShadow(
+            offset: const Offset(0, -2),
             blurRadius: 20.r,
-            color: isDark
-                ? Colors.white.withOpacity(0.1)
-                : Colors.black.withOpacity(0.1),
-          )
+            color: Colors.purple.withOpacity(0.2),
+          ),
         ],
+        border: Border(
+          top: BorderSide(
+            color: Colors.purple.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
       ),
       child: SafeArea(
         child: Container(
-          height: 70.h,
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          child: Obx(() {
-            final isDark = Theme.of(Get.context!).brightness == Brightness.dark;
-            return GNav(
-              rippleColor: isDark ? Colors.grey[700]! : Colors.grey[300]!,
-              hoverColor: isDark ? Colors.grey[800]! : Colors.grey[100]!,
-              gap: 8.w,
-              activeColor: Theme.of(Get.context!).colorScheme.primary,
-              iconSize: 24.r,
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              duration: const Duration(milliseconds: 400),
-              tabBackgroundColor: isDark ? Colors.grey[800]! : Colors.grey[100]!,
-              color: Theme.of(Get.context!).colorScheme.onSurface,
-            tabs: [
-              GButton(
-                icon: Iconsax.home,
-                text: 'Anime',
-                textStyle: TextStyle(fontSize: 12.sp),
-              ),
-              GButton(
-                icon: Iconsax.card,
-                text: 'Thẻ Bài',
-                textStyle: TextStyle(fontSize: 12.sp),
-              ),
-              GButton(
-                icon: Iconsax.map,
-                text: 'Phiêu Lưu',
-                textStyle: TextStyle(fontSize: 12.sp),
-              ),
-              GButton(
-                icon: Iconsax.gift,
-                text: 'Gacha',
-                textStyle: TextStyle(fontSize: 12.sp),
-              ),
-              GButton(
-                icon: Iconsax.profile_circle,
-                text: 'Tài khoản',
-                textStyle: TextStyle(fontSize: 12.sp),
-              ),
-            ],
-              selectedIndex: controller.currentIndex.value,
-              onTabChange: (index) {
-                controller.changeTabIndex(index);
-              },
-            );
-          }),
+          height: 80.h,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          child: Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildGameNavItem(0, Iconsax.play, 'Anime', Colors.red, false),
+                _buildGameNavItem(
+                  1,
+                  Iconsax.card,
+                  'Cards',
+                  Colors.blue,
+                  false,
+                ),
+                _buildGameNavItem(
+                  2,
+                  Iconsax.map,
+                  'Quest',
+                  Colors.green,
+                  false,
+                ),
+                _buildGameNavItem(
+                  3,
+                  Iconsax.gift,
+                  'Gacha',
+                  Colors.purple,
+                  false,
+                ),
+                _buildGameNavItem(
+                  4,
+                  Iconsax.profile_circle,
+                  'Profile',
+                  Colors.orange,
+                  false,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label, bool isMobile) {
+  Widget _buildGameNavItem(
+    int index,
+    IconData icon,
+    String label,
+    Color themeColor,
+    bool isMobile,
+  ) {
     final isSelected = controller.currentIndex.value == index;
-    final theme = Theme.of(Get.context!);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Expanded(
       child: GestureDetector(
         onTap: () => controller.changeTabIndex(index),
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 300),
+          margin: EdgeInsets.symmetric(horizontal: 1.w),
           padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 4.w : 8.w,
+            horizontal: isMobile ? 1.w : 4.w,
             vertical: isMobile ? 6.h : 8.h,
           ),
           decoration: BoxDecoration(
-            color: isSelected
-                ? theme.colorScheme.primary.withOpacity(0.1)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8.r),
+            gradient: isSelected
+                ? LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      themeColor.withOpacity(0.2),
+                      themeColor.withOpacity(0.1),
+                    ],
+                  )
+                : null,
+            borderRadius: BorderRadius.circular(12.r),
+            border: isSelected
+                ? Border.all(color: themeColor.withOpacity(0.5), width: 1.5)
+                : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: themeColor.withOpacity(0.3),
+                      blurRadius: 8.r,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: isMobile ? 18.r : 20.r,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                padding: EdgeInsets.all(isSelected ? 4.r : 3.r),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? themeColor.withOpacity(0.2)
+                      : Colors.transparent,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  size: isMobile
+                      ? (isSelected ? 18.r : 16.r)
+                      : (isSelected ? 22.r : 20.r),
+                  color: isSelected
+                      ? themeColor
+                      : Colors.grey[400],
+                ),
               ),
               SizedBox(height: 2.h),
               Flexible(
                 child: Text(
                   label,
                   style: TextStyle(
-                    fontSize: isMobile ? 9.sp : 10.sp,
+                    fontSize: isMobile
+                        ? (isSelected ? 8.sp : 7.sp)
+                        : (isSelected ? 10.sp : 9.sp),
                     color: isSelected
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurface.withOpacity(0.6),
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                        ? themeColor
+                        : Colors.grey[400],
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    letterSpacing: 0.2,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if (isSelected)
+                Container(
+                  margin: EdgeInsets.only(top: 2.h),
+                  height: 2.h,
+                  width: 20.w,
+                  decoration: BoxDecoration(
+                    color: themeColor,
+                    borderRadius: BorderRadius.circular(1.r),
+                  ),
+                ),
             ],
           ),
         ),

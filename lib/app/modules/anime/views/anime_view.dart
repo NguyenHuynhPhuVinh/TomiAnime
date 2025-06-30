@@ -12,44 +12,90 @@ class AnimeView extends GetView<AnimeController> {
     return Scaffold(
       appBar: AppBar(
         title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Tomi',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text('Anime'),
-          ],
-        ),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Iconsax.home,
-              size: 80.r,
-              color: Theme.of(context).colorScheme.primary,
+              Iconsax.play,
+              color: Colors.red,
+              size: 24.r,
             ),
-            SizedBox(height: 24.h),
-            Text(
-              'Trang chủ Anime',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              'Đang phát triển...',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
-            ),
+            SizedBox(width: 8.w),
+            const Text('Anime Collection'),
           ],
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.red.withOpacity(0.1),
+                Colors.pink.withOpacity(0.1),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF1A1A2E),
+              Color(0xFF16213E),
+            ],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(20.r),
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.red.withOpacity(0.2),
+                      Colors.red.withOpacity(0.05),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Iconsax.play,
+                  size: 80.r,
+                  color: Colors.red,
+                ),
+              ),
+              SizedBox(height: 24.h),
+              Text(
+                'Anime Collection',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                'Khám phá thế giới anime tuyệt vời',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Đang phát triển...',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.red.withOpacity(0.7),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
