@@ -4,34 +4,40 @@ import 'package:getwidget/getwidget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../controllers/auth_controller.dart';
+import '../controllers/register_controller.dart';
 
-class AuthView extends GetView<AuthController> {
-  const AuthView({super.key});
+class RegisterView extends GetView<RegisterController> {
+  const RegisterView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E27),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Iconsax.arrow_left,
+            color: Colors.white,
+            size: 24.sp,
+          ),
+          onPressed: controller.goToLogin,
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             children: [
-              SizedBox(height: 60.h),
+              SizedBox(height: 20.h),
               _buildHeader(),
               SizedBox(height: 40.h),
-              Obx(() => controller.isLoginMode.value 
-                ? _buildLoginForm() 
-                : _buildRegisterForm()),
+              _buildRegisterForm(),
               SizedBox(height: 24.h),
               _buildGoogleSignInButton(),
               SizedBox(height: 24.h),
-              _buildToggleAuthMode(),
-              if (controller.isLoginMode.value) ...[
-                SizedBox(height: 16.h),
-                _buildForgotPassword(),
-              ],
+              _buildLoginLink(),
               SizedBox(height: 40.h),
             ],
           ),
@@ -55,14 +61,14 @@ class AuthView extends GetView<AuthController> {
             borderRadius: BorderRadius.circular(20.r),
           ),
           child: Icon(
-            Iconsax.user,
+            Iconsax.user_add,
             size: 40.sp,
             color: Colors.white,
           ),
         ),
         SizedBox(height: 24.h),
         Text(
-          'TomiAnime',
+          'Tạo tài khoản',
           style: TextStyle(
             fontSize: 32.sp,
             fontWeight: FontWeight.bold,
@@ -70,37 +76,20 @@ class AuthView extends GetView<AuthController> {
           ),
         ),
         SizedBox(height: 8.h),
-        Obx(() => Text(
-          controller.isLoginMode.value 
-            ? 'Chào mừng trở lại!' 
-            : 'Tạo tài khoản mới',
+        Text(
+          'Tham gia cộng đồng TomiAnime',
           style: TextStyle(
             fontSize: 16.sp,
             color: Colors.grey[400],
           ),
-        )),
+        ),
       ],
-    );
-  }
-
-  Widget _buildLoginForm() {
-    return Form(
-      key: controller.loginFormKey,
-      child: Column(
-        children: [
-          _buildEmailField(),
-          SizedBox(height: 16.h),
-          _buildPasswordField(),
-          SizedBox(height: 24.h),
-          _buildLoginButton(),
-        ],
-      ),
     );
   }
 
   Widget _buildRegisterForm() {
     return Form(
-      key: controller.registerFormKey,
+      key: controller.formKey,
       child: Column(
         children: [
           _buildEmailField(),
@@ -225,29 +214,12 @@ class AuthView extends GetView<AuthController> {
     );
   }
 
-  Widget _buildLoginButton() {
-    return Obx(() => GFButton(
-      onPressed: controller.isLoginLoading.value
-        ? null
-        : controller.signInWithEmailAndPassword,
-      text: controller.isLoginLoading.value ? 'Đang đăng nhập...' : 'Đăng nhập',
-      size: GFSize.LARGE,
-      fullWidthButton: true,
-      color: const Color(0xFF6C5CE7),
-      shape: GFButtonShape.pills,
-      textStyle: TextStyle(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w600,
-      ),
-    ));
-  }
-
   Widget _buildRegisterButton() {
     return Obx(() => GFButton(
       onPressed: controller.isRegisterLoading.value
         ? null
         : controller.signUpWithEmailAndPassword,
-      text: controller.isRegisterLoading.value ? 'Đang đăng ký...' : 'Tạo tài khoản',
+      text: controller.isRegisterLoading.value ? 'Đang tạo tài khoản...' : 'Tạo tài khoản',
       size: GFSize.LARGE,
       fullWidthButton: true,
       color: const Color(0xFF6C5CE7),
@@ -318,7 +290,7 @@ class AuthView extends GetView<AuthController> {
                 Text(
                   controller.isGoogleLoading.value
                     ? 'Đang đăng nhập...'
-                    : 'Đăng nhập với Google',
+                    : 'Đăng ký với Google',
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -333,25 +305,21 @@ class AuthView extends GetView<AuthController> {
     ));
   }
 
-  Widget _buildToggleAuthMode() {
-    return Obx(() => Row(
+  Widget _buildLoginLink() {
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          controller.isLoginMode.value 
-            ? 'Chưa có tài khoản? ' 
-            : 'Đã có tài khoản? ',
+          'Đã có tài khoản? ',
           style: TextStyle(
             color: Colors.grey[400],
             fontSize: 14.sp,
           ),
         ),
         GestureDetector(
-          onTap: controller.toggleAuthMode,
+          onTap: controller.goToLogin,
           child: Text(
-            controller.isLoginMode.value 
-              ? 'Đăng ký ngay' 
-              : 'Đăng nhập',
+            'Đăng nhập',
             style: TextStyle(
               color: const Color(0xFF6C5CE7),
               fontSize: 14.sp,
@@ -360,20 +328,6 @@ class AuthView extends GetView<AuthController> {
           ),
         ),
       ],
-    ));
-  }
-
-  Widget _buildForgotPassword() {
-    return GestureDetector(
-      onTap: controller.resetPassword,
-      child: Text(
-        'Quên mật khẩu?',
-        style: TextStyle(
-          color: const Color(0xFF6C5CE7),
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
     );
   }
 }

@@ -298,7 +298,7 @@ class AccountView extends GetView<AccountController> {
                 onPressed: () async {
                   Get.back();
                   await authService.signOut();
-                  Get.offAllNamed('/auth');
+                  Get.offAllNamed('/login');
                 },
                 child: const Text(
                   'Đăng xuất',

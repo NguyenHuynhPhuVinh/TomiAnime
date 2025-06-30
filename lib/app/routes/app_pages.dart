@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
 import '../middlewares/auth_middleware.dart';
-import '../modules/auth/bindings/auth_binding.dart';
-import '../modules/auth/views/auth_view.dart';
+import '../modules/auth/bindings/login_binding.dart';
+import '../modules/auth/bindings/register_binding.dart';
+import '../modules/auth/bindings/forgot_password_binding.dart';
+import '../modules/auth/views/login_view.dart';
+import '../modules/auth/views/register_view.dart';
+import '../modules/auth/views/forgot_password_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/anime/bindings/anime_binding.dart';
@@ -20,13 +24,23 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.AUTH;
+  static const INITIAL = Routes.LOGIN;
 
   static final routes = [
     GetPage(
-      name: _Paths.AUTH,
-      page: () => const AuthView(),
-      binding: AuthBinding(),
+      name: _Paths.LOGIN,
+      page: () => const LoginView(),
+      binding: LoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.REGISTER,
+      page: () => const RegisterView(),
+      binding: RegisterBinding(),
+    ),
+    GetPage(
+      name: _Paths.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
     ),
     GetPage(
       name: _Paths.HOME,

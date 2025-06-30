@@ -3,7 +3,9 @@ part of 'app_pages.dart';
 
 abstract class Routes {
   Routes._();
-  static const AUTH = _Paths.AUTH;
+  static const LOGIN = _Paths.LOGIN;
+  static const REGISTER = _Paths.REGISTER;
+  static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
   static const HOME = _Paths.HOME;
   static const ANIME = _Paths.ANIME;
   static const CARDS = _Paths.CARDS;
@@ -14,7 +16,9 @@ abstract class Routes {
 
 abstract class _Paths {
   _Paths._();
-  static const AUTH = '/auth';
+  static const LOGIN = '/login';
+  static const REGISTER = '/register';
+  static const FORGOT_PASSWORD = '/forgot-password';
   static const HOME = '/home';
   static const ANIME = '/anime';
   static const CARDS = '/cards';

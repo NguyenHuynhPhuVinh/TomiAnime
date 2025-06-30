@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/auth_service.dart';
 
-class AuthController extends GetxController {
+class RegisterController extends GetxController {
   final AuthService _authService = AuthService.instance;
   
   // Form controllers
@@ -10,17 +10,14 @@ class AuthController extends GetxController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   
-  // Form keys
-  final loginFormKey = GlobalKey<FormState>();
-  final registerFormKey = GlobalKey<FormState>();
+  // Form key
+  final formKey = GlobalKey<FormState>();
   
   // Observable states
-  final isLoginLoading = false.obs;
   final isRegisterLoading = false.obs;
   final isGoogleLoading = false.obs;
   final isPasswordVisible = false.obs;
   final isConfirmPasswordVisible = false.obs;
-  final isLoginMode = true.obs;
   
   @override
   void onClose() {
@@ -37,15 +34,6 @@ class AuthController extends GetxController {
   
   void toggleConfirmPasswordVisibility() {
     isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
-  }
-  
-  // Toggle between login and register mode
-  void toggleAuthMode() {
-    isLoginMode.value = !isLoginMode.value;
-    // Clear form when switching modes
-    emailController.clear();
-    passwordController.clear();
-    confirmPasswordController.clear();
   }
   
   // Email validation
@@ -81,27 +69,9 @@ class AuthController extends GetxController {
     return null;
   }
   
-  // Sign in with email and password
-  Future<void> signInWithEmailAndPassword() async {
-    if (!loginFormKey.currentState!.validate()) return;
-
-    isLoginLoading.value = true;
-
-    final result = await _authService.signInWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text,
-    );
-
-    isLoginLoading.value = false;
-
-    if (result != null) {
-      Get.offAllNamed('/home');
-    }
-  }
-  
   // Sign up with email and password
   Future<void> signUpWithEmailAndPassword() async {
-    if (!registerFormKey.currentState!.validate()) return;
+    if (!formKey.currentState!.validate()) return;
 
     isRegisterLoading.value = true;
 
@@ -135,27 +105,8 @@ class AuthController extends GetxController {
     }
   }
   
-  // Reset password
-  Future<void> resetPassword() async {
-    if (emailController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Lỗi',
-        'Vui lòng nhập email để đặt lại mật khẩu',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-    
-    if (!GetUtils.isEmail(emailController.text.trim())) {
-      Get.snackbar(
-        'Lỗi',
-        'Email không hợp lệ',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-    
-    // Reset password không cần loading state riêng vì không conflict với các nút khác
-    await _authService.resetPassword(emailController.text.trim());
+  // Navigate to login screen
+  void goToLogin() {
+    Get.back();
   }
 }

@@ -9,17 +9,20 @@ class AuthMiddleware extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     final authService = Get.find<AuthService>();
-    
+
+    // Auth routes that don't require authentication
+    final authRoutes = ['/login', '/register', '/forgot-password'];
+
     // If user is not logged in and trying to access protected routes
-    if (!authService.isLoggedIn && route != '/auth') {
-      return const RouteSettings(name: '/auth');
+    if (!authService.isLoggedIn && !authRoutes.contains(route)) {
+      return const RouteSettings(name: '/login');
     }
-    
-    // If user is logged in and trying to access auth page
-    if (authService.isLoggedIn && route == '/auth') {
+
+    // If user is logged in and trying to access auth pages
+    if (authService.isLoggedIn && authRoutes.contains(route)) {
       return const RouteSettings(name: '/home');
     }
-    
+
     return null;
   }
 }
