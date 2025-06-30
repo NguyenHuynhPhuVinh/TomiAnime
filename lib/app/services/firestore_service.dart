@@ -13,9 +13,26 @@ class FirestoreService extends GetxService {
       await _firestore
           .collection('users')
           .doc(user.uid)
-          .set(user.toMap());
+          .set(user.toMap(), SetOptions(merge: true));
 
       print('✅ User saved: ${user.email}');
+      return true;
+    } catch (e) {
+      print('❌ Error saving user: $e');
+      return false;
+    }
+  }
+
+  /// Lưu hoặc cập nhật thông tin user (chỉ cập nhật khi user chưa tồn tại)
+  Future<bool> saveUserIfNotExists(UserModel user) async {
+    try {
+      final existingUser = await getUser(user.uid);
+
+      if (existingUser == null) {
+        // User chưa tồn tại, tạo mới
+        await _firestore.collection('users').doc(user.uid).set(user.toMap());
+        print('✅ New user created: ${user.email}');
+      }
       return true;
     } catch (e) {
       print('❌ Error saving user: $e');
@@ -26,10 +43,7 @@ class FirestoreService extends GetxService {
   /// Lấy thông tin user
   Future<UserModel?> getUser(String uid) async {
     try {
-      final doc = await _firestore
-          .collection('users')
-          .doc(uid)
-          .get();
+      final doc = await _firestore.collection('users').doc(uid).get();
 
       if (doc.exists) {
         return UserModel.fromFirestore(doc);

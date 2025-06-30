@@ -210,7 +210,7 @@ class AuthService extends GetxService {
     );
   }
 
-  // Save user to Firestore
+  // Save user to Firestore (chỉ tạo mới nếu chưa tồn tại)
   Future<void> _saveUserToFirestore(User user) async {
     try {
       final userModel = UserModel.fromFirebaseUser(
@@ -219,7 +219,7 @@ class AuthService extends GetxService {
         user.displayName,
       );
 
-      await _firestoreService.saveUser(userModel);
+      await _firestoreService.saveUserIfNotExists(userModel);
     } catch (e) {
       print('❌ Error saving user to Firestore: $e');
     }
