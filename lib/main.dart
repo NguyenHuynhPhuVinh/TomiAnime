@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 import 'app/routes/app_pages.dart';
 import 'app/services/auth_service.dart';
 import 'app/services/auth_guard.dart';
+import 'app/services/firestore_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,8 @@ void main() async {
   // Initialize Hive
   await Hive.initFlutter();
 
-  // Initialize AuthService
+  // Initialize Services
+  Get.put(FirestoreService());
   Get.put(AuthService());
 
   runApp(const TomiAnimeApp());

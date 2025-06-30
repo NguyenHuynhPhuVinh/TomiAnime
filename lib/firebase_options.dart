@@ -59,4 +59,5 @@ class DefaultFirebaseOptions {
     projectId: 'tomianime-382c0',
     storageBucket: 'tomianime-382c0.firebasestorage.app',
   );
+
 }

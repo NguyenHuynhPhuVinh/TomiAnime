@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:getwidget/getwidget.dart';
 import '../controllers/account_controller.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/firestore_service.dart';
+import '../../../models/user_model.dart';
 
 class AccountView extends GetView<AccountController> {
   const AccountView({Key? key}) : super(key: key);
@@ -71,61 +73,91 @@ class AccountView extends GetView<AccountController> {
 
   Widget _buildUserProfile() {
     final authService = AuthService.instance;
+    final firestoreService = FirestoreService.instance;
     final user = authService.currentUser;
 
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.orange.withOpacity(0.1),
-            Colors.deepOrange.withOpacity(0.05),
-          ],
+    if (user == null) {
+      return Container(
+        padding: EdgeInsets.all(20.w),
+        child: Text(
+          'Chưa đăng nhập',
+          style: TextStyle(color: Colors.white),
         ),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: Colors.orange.withOpacity(0.3),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                colors: [
-                  Colors.orange.withOpacity(0.3),
-                  Colors.orange.withOpacity(0.1),
-                ],
+      );
+    }
+
+    return FutureBuilder<UserModel?>(
+      future: firestoreService.getUser(user.uid),
+      builder: (context, snapshot) {
+        final userModel = snapshot.data;
+
+        return Container(
+          padding: EdgeInsets.all(20.w),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.orange.withOpacity(0.1),
+                Colors.deepOrange.withOpacity(0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: Colors.orange.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.orange.withOpacity(0.3),
+                      Colors.orange.withOpacity(0.1),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Iconsax.profile_circle,
+                  size: 60.r,
+                  color: Colors.orange,
+                ),
               ),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Iconsax.profile_circle,
-              size: 60.r,
-              color: Colors.orange,
-            ),
+              SizedBox(height: 16.h),
+              Text(
+                userModel?.displayName ?? user.displayName ?? 'Người dùng',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                userModel?.email ?? user.email ?? 'email@example.com',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.grey[400],
+                ),
+              ),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                Padding(
+                  padding: EdgeInsets.only(top: 8.h),
+                  child: SizedBox(
+                    width: 20.w,
+                    height: 20.w,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                    ),
+                  ),
+                ),
+            ],
           ),
-          SizedBox(height: 16.h),
-          Text(
-            user?.displayName ?? 'Người dùng',
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            user?.email ?? 'email@example.com',
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[400],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

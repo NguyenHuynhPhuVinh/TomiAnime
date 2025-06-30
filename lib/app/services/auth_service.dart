@@ -1,12 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
+import '../models/user_model.dart';
+import 'firestore_service.dart';
 
 class AuthService extends GetxService {
   static AuthService get instance => Get.find();
-  
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirestoreService _firestoreService = FirestoreService.instance;
   
   // Observable user state
   Rxn<User> user = Rxn<User>();
@@ -34,6 +37,12 @@ class AuthService extends GetxService {
         email: email,
         password: password,
       );
+
+      // Save user to Firestore
+      if (credential.user != null) {
+        await _saveUserToFirestore(credential.user!);
+      }
+
       return credential;
     } on FirebaseAuthException catch (e) {
       _handleAuthError(e);
@@ -58,6 +67,12 @@ class AuthService extends GetxService {
         email: email,
         password: password,
       );
+
+      // Save user to Firestore
+      if (credential.user != null) {
+        await _saveUserToFirestore(credential.user!);
+      }
+
       return credential;
     } on FirebaseAuthException catch (e) {
       _handleAuthError(e);
@@ -99,6 +114,12 @@ class AuthService extends GetxService {
       print('🔍 Signing in to Firebase...');
       final result = await _auth.signInWithCredential(credential);
       print('🔍 Firebase sign-in successful: ${result.user?.email}');
+
+      // Save user to Firestore
+      if (result.user != null) {
+        await _saveUserToFirestore(result.user!);
+      }
+
       return result;
     } catch (e) {
       print('🔍 Google Sign-In error: $e');
@@ -187,5 +208,20 @@ class AuthService extends GetxService {
       message,
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+
+  // Save user to Firestore
+  Future<void> _saveUserToFirestore(User user) async {
+    try {
+      final userModel = UserModel.fromFirebaseUser(
+        user.uid,
+        user.email ?? '',
+        user.displayName,
+      );
+
+      await _firestoreService.saveUser(userModel);
+    } catch (e) {
+      print('❌ Error saving user to Firestore: $e');
+    }
   }
 }

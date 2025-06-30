@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "499071773864-2gkvegk21cl5l2ruv26jpbtgu1af1dc2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tomisakae.anime",
+            "certificate_hash": "78e13428277f220c23b2461e20893da974cccfb1"
+          }
+        },
+        {
           "client_id": "499071773864-2fk36ma99arvp3pd5ea2gnhn5f5filg1.apps.googleusercontent.com",
           "client_type": 3
         }
