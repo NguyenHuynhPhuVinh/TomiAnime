@@ -3,8 +3,12 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/anime/bindings/anime_binding.dart';
 import '../modules/anime/views/anime_view.dart';
-import '../modules/search/bindings/search_binding.dart';
-import '../modules/search/views/search_view.dart';
+import '../modules/cards/bindings/cards_binding.dart';
+import '../modules/cards/views/cards_view.dart';
+import '../modules/adventure/bindings/adventure_binding.dart';
+import '../modules/adventure/views/adventure_view.dart';
+import '../modules/gacha/bindings/gacha_binding.dart';
+import '../modules/gacha/views/gacha_view.dart';
 import '../modules/account/bindings/account_binding.dart';
 import '../modules/account/views/account_view.dart';
 
@@ -27,9 +31,19 @@ class AppPages {
       binding: AnimeBinding(),
     ),
     GetPage(
-      name: _Paths.SEARCH,
-      page: () => const SearchView(),
-      binding: SearchBinding(),
+      name: _Paths.CARDS,
+      page: () => const CardsView(),
+      binding: CardsBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADVENTURE,
+      page: () => const AdventureView(),
+      binding: AdventureBinding(),
+    ),
+    GetPage(
+      name: _Paths.GACHA,
+      page: () => const GachaView(),
+      binding: GachaBinding(),
     ),
     GetPage(
       name: _Paths.ACCOUNT,

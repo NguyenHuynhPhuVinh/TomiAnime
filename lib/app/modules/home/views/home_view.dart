@@ -7,7 +7,9 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 import '../controllers/home_controller.dart';
 import '../../anime/views/anime_view.dart';
-import '../../search/views/search_view.dart';
+import '../../cards/views/cards_view.dart';
+import '../../adventure/views/adventure_view.dart';
+import '../../gacha/views/gacha_view.dart';
 import '../../account/views/account_view.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -20,7 +22,9 @@ class HomeView extends GetView<HomeController> {
         index: controller.currentIndex.value,
         children: const [
           AnimeView(),
-          SearchView(),
+          CardsView(),
+          AdventureView(),
+          GachaView(),
           AccountView(),
         ],
       )),
@@ -61,9 +65,11 @@ class HomeView extends GetView<HomeController> {
           child: Obx(() => Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildNavItem(0, Iconsax.home, 'Trang chủ', true),
-              _buildNavItem(1, Iconsax.search_normal, 'Tìm kiếm', true),
-              _buildNavItem(2, Iconsax.profile_circle, 'Tài khoản', true),
+              _buildNavItem(0, Iconsax.home, 'Anime', true),
+              _buildNavItem(1, Iconsax.card, 'Thẻ Bài', true),
+              _buildNavItem(2, Iconsax.map, 'Phiêu Lưu', true),
+              _buildNavItem(3, Iconsax.gift, 'Gacha', true),
+              _buildNavItem(4, Iconsax.profile_circle, 'Tài khoản', true),
             ],
           )),
         ),
@@ -104,12 +110,22 @@ class HomeView extends GetView<HomeController> {
             tabs: [
               GButton(
                 icon: Iconsax.home,
-                text: 'Trang chủ',
+                text: 'Anime',
                 textStyle: TextStyle(fontSize: 12.sp),
               ),
               GButton(
-                icon: Iconsax.search_normal,
-                text: 'Tìm kiếm',
+                icon: Iconsax.card,
+                text: 'Thẻ Bài',
+                textStyle: TextStyle(fontSize: 12.sp),
+              ),
+              GButton(
+                icon: Iconsax.map,
+                text: 'Phiêu Lưu',
+                textStyle: TextStyle(fontSize: 12.sp),
+              ),
+              GButton(
+                icon: Iconsax.gift,
+                text: 'Gacha',
                 textStyle: TextStyle(fontSize: 12.sp),
               ),
               GButton(

@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../controllers/search_controller.dart';
+import '../controllers/cards_controller.dart';
 
-class SearchView extends GetView<AnimeSearchController> {
-  const SearchView({Key? key}) : super(key: key);
+class CardsView extends GetView<CardsController> {
+  const CardsView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tìm kiếm Anime'),
+        title: const Text('Thẻ Bài'),
         centerTitle: true,
       ),
       body: Center(
@@ -19,13 +19,13 @@ class SearchView extends GetView<AnimeSearchController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Iconsax.search_normal,
+              Iconsax.card,
               size: 80.r,
               color: Theme.of(context).colorScheme.primary,
             ),
             SizedBox(height: 24.h),
             Text(
-              'Tìm kiếm Anime',
+              'Thẻ Bài',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),

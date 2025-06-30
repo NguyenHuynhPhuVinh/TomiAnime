@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class AnimeSearchController extends GetxController {
+class AdventureController extends GetxController {
   @override
   void onInit() {
     super.onInit();
