@@ -56,10 +56,7 @@ class AnimeView extends GetView<AnimeController> {
             size: 24.r,
           ),
         ),
-        IconButton(
-          onPressed: () => _showSortOptions(),
-          icon: Icon(Iconsax.sort, color: AppColors.textSecondary, size: 24.r),
-        ),
+
       ],
     );
   }
@@ -181,8 +178,11 @@ class AnimeView extends GetView<AnimeController> {
 
       return NotificationListener<ScrollNotification>(
         onNotification: (ScrollNotification scrollInfo) {
-          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-            controller.loadMore();
+          // Chỉ load more khi scroll đến gần cuối (90% của scroll)
+          if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.9) {
+            if (!controller.isLoadingMore.value && controller.hasNextPage.value) {
+              controller.loadMore();
+            }
           }
           return false;
         },
@@ -502,152 +502,7 @@ class AnimeView extends GetView<AnimeController> {
     );
   }
 
-  void _showSortOptions() {
-    showModalBottomSheet(
-      context: Get.context!,
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      isScrollControlled: true,
-      builder: (context) => Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.7,
-        ),
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(20.r),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Handle bar
-                Center(
-                  child: Container(
-                    width: 40.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color: AppColors.textSecondary.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2.r),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  'Sắp xếp theo',
-                  style: AppTextStyles.h5.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                ...controller.sortOptions.map(
-                  (option) => Obx(
-                    () => ListTile(
-                      title: Text(
-                        option['label']!,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      trailing: controller.selectedSort.value == option['value']
-                          ? Icon(
-                              Iconsax.tick_circle,
-                              color: AppColors.animeTheme,
-                            )
-                          : null,
-                      onTap: () {
-                        controller.onSortChanged(option['value']!);
-                        Get.back();
-                      },
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  'Thứ tự',
-                  style: AppTextStyles.h5.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Obx(
-                        () => GestureDetector(
-                          onTap: () => controller.onOrderChanged('desc'),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 12.h),
-                            decoration: BoxDecoration(
-                              color: controller.selectedOrder.value == 'desc'
-                                  ? AppColors.animeTheme
-                                  : AppColors.backgroundPrimary,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(
-                                color: controller.selectedOrder.value == 'desc'
-                                    ? AppColors.animeTheme
-                                    : AppColors.textSecondary.withOpacity(0.3),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Giảm dần',
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color:
-                                      controller.selectedOrder.value == 'desc'
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Obx(
-                        () => GestureDetector(
-                          onTap: () => controller.onOrderChanged('asc'),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 12.h),
-                            decoration: BoxDecoration(
-                              color: controller.selectedOrder.value == 'asc'
-                                  ? AppColors.animeTheme
-                                  : AppColors.backgroundPrimary,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(
-                                color: controller.selectedOrder.value == 'asc'
-                                    ? AppColors.animeTheme
-                                    : AppColors.textSecondary.withOpacity(0.3),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Tăng dần',
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: controller.selectedOrder.value == 'asc'
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+
 
   void _showAnimeDetails(AnimeModel anime) {
     showModalBottomSheet(

@@ -17,11 +17,9 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
   final RxInt currentPage = 1.obs;
   final RxBool hasNextPage = true.obs;
 
-  // Filter và sort options
+  // Filter options
   final RxInt selectedYear = DateTime.now().year.obs;
-  final RxString selectedType = 'all'.obs; // all, tv, movie, ova, special, ona, music
-  final RxString selectedSort = 'popularity'.obs; // popularity, score, title, start_date
-  final RxString selectedOrder = 'desc'.obs; // desc, asc
+  final RxString selectedType = 'tv'.obs; // all, tv, movie, ova, special, ona, music
 
   // Seasons
   final List<String> seasons = ['winter', 'spring', 'summer', 'fall'];
@@ -38,15 +36,7 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
     {'value': 'music', 'label': 'Music'},
   ];
 
-  // Sort options
-  final List<Map<String, String>> sortOptions = [
-    {'value': 'popularity', 'label': 'Phổ biến'},
-    {'value': 'score', 'label': 'Điểm số'},
-    {'value': 'title', 'label': 'Tên'},
-    {'value': 'start_date', 'label': 'Ngày phát sóng'},
-    {'value': 'members', 'label': 'Thành viên'},
-    {'value': 'favorites', 'label': 'Yêu thích'},
-  ];
+
 
   @override
   void onInit() {
@@ -64,7 +54,11 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
 
   void _onTabChanged() {
     if (!tabController.indexIsChanging) {
-      loadSeasonAnime();
+      // Reset pagination khi chuyển tab mùa
+      currentPage.value = 1;
+      animeList.clear();
+      hasNextPage.value = true;
+      loadSeasonAnime(refresh: true);
     }
   }
 
@@ -93,7 +87,11 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
       hasNextPage.value = true;
     }
 
-    if (isLoading.value || (!hasNextPage.value && !refresh)) return;
+    // Ngăn load nhiều lần cùng lúc
+    if (isLoading.value || isLoadingMore.value) return;
+
+    // Ngăn load khi không còn page
+    if (!refresh && !hasNextPage.value) return;
 
     try {
       if (refresh) {
@@ -111,6 +109,7 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
       if (selectedSeason == currentSeason && selectedYear.value == DateTime.now().year) {
         response = await _apiService.getCurrentSeason(
           page: currentPage.value,
+          limit: 25,
           filter: filter.isEmpty ? null : filter,
         );
       } else {
@@ -118,21 +117,48 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
           year: selectedYear.value,
           season: selectedSeason,
           page: currentPage.value,
+          limit: 25,
           filter: filter.isEmpty ? null : filter,
         );
       }
 
-      // Sort dữ liệu
-      List<AnimeModel> sortedData = _sortAnimeList(response.data);
+      // Xử lý dữ liệu và filter trùng lặp
+      if (response.data.isNotEmpty) {
+        // Tạo map để loại bỏ trùng lặp trong chính response
+        final Map<int, AnimeModel> uniqueResponseData = {};
+        for (final anime in response.data) {
+          uniqueResponseData[anime.malId] = anime;
+        }
+        final List<AnimeModel> cleanResponseData = uniqueResponseData.values.toList();
 
-      if (refresh) {
-        animeList.value = sortedData;
+        if (refresh) {
+          animeList.value = cleanResponseData;
+          print('Loaded ${cleanResponseData.length} unique anime (${response.data.length - cleanResponseData.length} duplicates in API response) for page ${currentPage.value}');
+        } else {
+          // Kiểm tra trùng lặp với dữ liệu hiện có
+          final existingIds = animeList.map((anime) => anime.malId).toSet();
+          final newAnime = cleanResponseData.where((anime) => !existingIds.contains(anime.malId)).toList();
+
+          if (newAnime.isNotEmpty) {
+            animeList.addAll(newAnime);
+            // Đảm bảo không có trùng lặp
+            _ensureUniqueAnimeList();
+            print('Added ${newAnime.length} new anime (${cleanResponseData.length - newAnime.length} already existed) for page ${currentPage.value}');
+          } else {
+            print('All ${cleanResponseData.length} anime from page ${currentPage.value} already exist - stopping pagination');
+            hasNextPage.value = false;
+            return;
+          }
+        }
+
+        // Chỉ tăng page khi có dữ liệu
+        currentPage.value++;
       } else {
-        animeList.addAll(sortedData);
+        print('No data received for page ${currentPage.value}');
+        hasNextPage.value = false;
       }
 
       hasNextPage.value = response.pagination.hasNextPage;
-      currentPage.value++;
 
     } catch (e) {
       error.value = e.toString();
@@ -143,76 +169,22 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
     }
   }
 
-  List<AnimeModel> _sortAnimeList(List<AnimeModel> data) {
-    List<AnimeModel> sortedData = List.from(data);
-
-    switch (selectedSort.value) {
-      case 'score':
-        sortedData.sort((a, b) {
-          final scoreA = a.score ?? 0;
-          final scoreB = b.score ?? 0;
-          return selectedOrder.value == 'desc'
-              ? scoreB.compareTo(scoreA)
-              : scoreA.compareTo(scoreB);
-        });
-        break;
-      case 'title':
-        sortedData.sort((a, b) {
-          return selectedOrder.value == 'desc'
-              ? b.title.compareTo(a.title)
-              : a.title.compareTo(b.title);
-        });
-        break;
-      case 'popularity':
-        sortedData.sort((a, b) {
-          final popA = a.popularity ?? 999999;
-          final popB = b.popularity ?? 999999;
-          return selectedOrder.value == 'desc'
-              ? popA.compareTo(popB) // Popularity thấp hơn = phổ biến hơn
-              : popB.compareTo(popA);
-        });
-        break;
-      case 'members':
-        sortedData.sort((a, b) {
-          final membersA = a.members ?? 0;
-          final membersB = b.members ?? 0;
-          return selectedOrder.value == 'desc'
-              ? membersB.compareTo(membersA)
-              : membersA.compareTo(membersB);
-        });
-        break;
-      case 'favorites':
-        sortedData.sort((a, b) {
-          final favA = a.favorites ?? 0;
-          final favB = b.favorites ?? 0;
-          return selectedOrder.value == 'desc'
-              ? favB.compareTo(favA)
-              : favA.compareTo(favB);
-        });
-        break;
-    }
-
-    return sortedData;
-  }
-
   void onTypeChanged(String type) {
     selectedType.value = type;
-    loadSeasonAnime();
-  }
-
-  void onSortChanged(String sort) {
-    selectedSort.value = sort;
-    loadSeasonAnime();
-  }
-
-  void onOrderChanged(String order) {
-    selectedOrder.value = order;
-    loadSeasonAnime();
+    // Reset pagination khi thay đổi filter
+    currentPage.value = 1;
+    animeList.clear();
+    hasNextPage.value = true;
+    loadSeasonAnime(refresh: true);
   }
 
   void onYearChanged(int year) {
     selectedYear.value = year;
-    loadSeasonAnime();
+    // Reset pagination khi thay đổi năm
+    currentPage.value = 1;
+    animeList.clear();
+    hasNextPage.value = true;
+    loadSeasonAnime(refresh: true);
   }
 
   void loadMore() {
@@ -223,5 +195,17 @@ class AnimeController extends GetxController with GetSingleTickerProviderStateMi
 
   void refresh() {
     loadSeasonAnime(refresh: true);
+  }
+
+  // Helper method để đảm bảo danh sách anime luôn unique
+  void _ensureUniqueAnimeList() {
+    final Map<int, AnimeModel> uniqueAnime = {};
+    for (final anime in animeList) {
+      uniqueAnime[anime.malId] = anime;
+    }
+    if (uniqueAnime.length != animeList.length) {
+      animeList.value = uniqueAnime.values.toList();
+      print('Removed ${animeList.length - uniqueAnime.length} duplicate anime from list');
+    }
   }
 }
