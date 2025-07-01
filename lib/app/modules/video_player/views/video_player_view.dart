@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../controllers/video_player_controller.dart';
-import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 
 class VideoPlayerView extends GetView<VideoPlayerController> {
@@ -56,23 +53,10 @@ class VideoPlayerView extends GetView<VideoPlayerController> {
   }
 
   Widget _buildBody() {
-    return Stack(
-      children: [
-        // WebView với container cố định
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: _buildWebView(),
-        ),
-
-        // Loading overlay - chỉ hiện trong 3 giây đầu
-        Obx(() {
-          if (controller.isLoading.value) {
-            return _buildLoadingOverlay();
-          }
-          return const SizedBox.shrink();
-        }),
-      ],
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: _buildWebView(),
     );
   }
 
@@ -124,28 +108,4 @@ class VideoPlayerView extends GetView<VideoPlayerController> {
       },
     );
   }
-
-  Widget _buildLoadingOverlay() {
-    return Container(
-      color: Colors.black54,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              color: AppColors.animeTheme,
-              strokeWidth: 3.w,
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Đang tải video...',
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
 }

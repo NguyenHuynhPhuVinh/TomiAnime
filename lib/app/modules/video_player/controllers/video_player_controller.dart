@@ -1,12 +1,9 @@
-import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class VideoPlayerController extends GetxController {
-  // Observable variables
-  final isLoading = true.obs;
-  final error = ''.obs;
+  // Observable variables - removed loading state
 
   // Parameters từ navigation
   late String embedUrl;
@@ -38,11 +35,12 @@ class VideoPlayerController extends GetxController {
       print('   🔗 Embed URL: $embedUrl');
       print('   📊 Episode ${episodeIndex + 1}/$totalEpisodes');
 
+      // URL validation only, no loading state
       if (embedUrl.isEmpty) {
-        isLoading.value = false;
+        print('⚠️ Empty embed URL');
       }
     } else {
-      isLoading.value = false;
+      print('⚠️ Missing video arguments');
     }
   }
 
@@ -56,37 +54,41 @@ class VideoPlayerController extends GetxController {
 
   /// Xử lý khi bắt đầu load
   void onLoadStart(InAppWebViewController controller, WebUri? url) {
-    isLoading.value = true;
-    error.value = '';
     print('🔄 Loading embed URL: $url');
   }
 
   /// Xử lý khi load xong
   void onLoadStop(InAppWebViewController controller, WebUri? url) {
-    // Tắt loading sau 2 giây để đảm bảo video có thời gian load
-    Future.delayed(const Duration(seconds: 2), () {
-      isLoading.value = false;
-    });
     print('✅ Embed URL loaded: $url');
   }
 
   /// Xử lý lỗi - không hiện popup vì video vẫn có thể phát được
-  void onReceivedError(InAppWebViewController controller, WebResourceRequest request, WebResourceError error) {
+  void onReceivedError(
+    InAppWebViewController controller,
+    WebResourceRequest request,
+    WebResourceError error,
+  ) {
     // Chỉ log, không set error để tránh hiện popup
-    print('⚠️ WebView error (ignored): ${error.description} (Code: ${error.type})');
+    print(
+      '⚠️ WebView error (ignored): ${error.description} (Code: ${error.type})',
+    );
   }
 
   /// Xử lý lỗi HTTP - không hiện popup vì video vẫn có thể phát được
-  void onReceivedHttpError(InAppWebViewController controller, WebResourceRequest request, WebResourceResponse errorResponse) {
+  void onReceivedHttpError(
+    InAppWebViewController controller,
+    WebResourceRequest request,
+    WebResourceResponse errorResponse,
+  ) {
     // Chỉ log, không set error để tránh hiện popup
-    print('⚠️ WebView HTTP error (ignored): ${errorResponse.reasonPhrase} (Status: ${errorResponse.statusCode})');
+    print(
+      '⚠️ WebView HTTP error (ignored): ${errorResponse.reasonPhrase} (Status: ${errorResponse.statusCode})',
+    );
   }
 
   /// Reload video
   void reload() {
     if (webViewController != null) {
-      isLoading.value = true;
-
       print('🔄 Reloading embed URL: $embedUrl');
       webViewController!.reload();
     }
@@ -119,9 +121,7 @@ class VideoPlayerController extends GetxController {
 
   /// Handle fullscreen exit - auto rotate to portrait
   void onExitFullscreen() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     print('📱 Video exited fullscreen - rotated to portrait');
   }
@@ -129,9 +129,7 @@ class VideoPlayerController extends GetxController {
   @override
   void onClose() {
     // Restore portrait orientation when controller is disposed
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     webViewController = null;
     super.onClose();
