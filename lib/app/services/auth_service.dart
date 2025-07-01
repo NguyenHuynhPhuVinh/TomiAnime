@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';
 import 'firestore_service.dart';
+import '../utils/notification_helper.dart';
 
 class AuthService extends GetxService {
   static AuthService get instance => Get.find();
@@ -48,10 +49,9 @@ class AuthService extends GetxService {
       _handleAuthError(e);
       return null;
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
-        'Đã xảy ra lỗi không xác định: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi đăng nhập',
+        message: 'Đã xảy ra lỗi không xác định: $e',
       );
       return null;
     }
@@ -78,10 +78,9 @@ class AuthService extends GetxService {
       _handleAuthError(e);
       return null;
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
-        'Đã xảy ra lỗi không xác định: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi đăng ký',
+        message: 'Đã xảy ra lỗi không xác định: $e',
       );
       return null;
     }
@@ -123,10 +122,9 @@ class AuthService extends GetxService {
       return result;
     } catch (e) {
       print('🔍 Google Sign-In error: $e');
-      Get.snackbar(
-        'Lỗi',
-        'Đăng nhập Google thất bại: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi đăng nhập Google',
+        message: 'Đăng nhập Google thất bại: $e',
       );
       return null;
     }
@@ -140,10 +138,9 @@ class AuthService extends GetxService {
         _googleSignIn.signOut(),
       ]);
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
-        'Đăng xuất thất bại: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi đăng xuất',
+        message: 'Đăng xuất thất bại: $e',
       );
     }
   }
@@ -152,20 +149,19 @@ class AuthService extends GetxService {
   Future<bool> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
-      Get.snackbar(
-        'Thành công',
-        'Email đặt lại mật khẩu đã được gửi',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showSuccess(
+        title: 'Thành công',
+        message: 'Email đặt lại mật khẩu đã được gửi đến $email. Vui lòng kiểm tra hộp thư của bạn.',
+        duration: const Duration(seconds: 5),
       );
       return true;
     } on FirebaseAuthException catch (e) {
       _handleAuthError(e);
       return false;
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
-        'Đã xảy ra lỗi không xác định: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi',
+        message: 'Đã xảy ra lỗi không xác định: $e',
       );
       return false;
     }
@@ -173,40 +169,59 @@ class AuthService extends GetxService {
   
   // Handle Firebase Auth errors
   void _handleAuthError(FirebaseAuthException e) {
+    String title;
     String message;
+
     switch (e.code) {
       case 'user-not-found':
-        message = 'Không tìm thấy tài khoản với email này';
+        title = 'Tài khoản không tồn tại';
+        message = 'Không tìm thấy tài khoản với email này. Vui lòng kiểm tra lại email hoặc đăng ký tài khoản mới.';
         break;
       case 'wrong-password':
-        message = 'Mật khẩu không chính xác';
+        title = 'Mật khẩu không đúng';
+        message = 'Mật khẩu bạn nhập không chính xác. Vui lòng thử lại hoặc đặt lại mật khẩu.';
         break;
       case 'email-already-in-use':
-        message = 'Email này đã được sử dụng';
+        title = 'Email đã được sử dụng';
+        message = 'Email này đã được đăng ký cho tài khoản khác. Vui lòng sử dụng email khác hoặc đăng nhập.';
         break;
       case 'weak-password':
-        message = 'Mật khẩu quá yếu';
+        title = 'Mật khẩu quá yếu';
+        message = 'Mật khẩu phải có ít nhất 6 ký tự. Vui lòng chọn mật khẩu mạnh hơn.';
         break;
       case 'invalid-email':
-        message = 'Email không hợp lệ';
+        title = 'Email không hợp lệ';
+        message = 'Định dạng email không đúng. Vui lòng nhập email hợp lệ.';
         break;
       case 'user-disabled':
-        message = 'Tài khoản đã bị vô hiệu hóa';
+        title = 'Tài khoản bị khóa';
+        message = 'Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.';
         break;
       case 'too-many-requests':
-        message = 'Quá nhiều yêu cầu. Vui lòng thử lại sau';
+        title = 'Quá nhiều yêu cầu';
+        message = 'Bạn đã thực hiện quá nhiều yêu cầu. Vui lòng đợi một lúc rồi thử lại.';
         break;
       case 'operation-not-allowed':
-        message = 'Phương thức đăng nhập này không được phép';
+        title = 'Phương thức không được phép';
+        message = 'Phương thức đăng nhập này hiện không được hỗ trợ.';
+        break;
+      case 'invalid-credential':
+        title = 'Thông tin đăng nhập không hợp lệ';
+        message = 'Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại thông tin.';
+        break;
+      case 'network-request-failed':
+        title = 'Lỗi kết nối';
+        message = 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet.';
         break;
       default:
-        message = 'Đã xảy ra lỗi: ${e.message}';
+        title = 'Lỗi xác thực';
+        message = e.message ?? 'Đã xảy ra lỗi không xác định. Vui lòng thử lại.';
     }
-    
-    Get.snackbar(
-      'Lỗi đăng nhập',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
+
+    NotificationHelper.showError(
+      title: title,
+      message: message,
+      duration: const Duration(seconds: 5),
     );
   }
 

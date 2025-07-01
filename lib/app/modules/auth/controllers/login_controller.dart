@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/auth_service.dart';
+import '../../../utils/notification_helper.dart';
 
 class LoginController extends GetxController {
   final AuthService _authService = AuthService.instance;
@@ -65,6 +66,14 @@ class LoginController extends GetxController {
     isLoginLoading.value = false;
 
     if (result != null) {
+      NotificationHelper.showSuccess(
+        title: 'Đăng nhập thành công',
+        message: 'Chào mừng bạn quay trở lại!',
+        duration: const Duration(seconds: 2),
+      );
+
+      // Đợi một chút để hiển thị thông báo rồi chuyển trang
+      await Future.delayed(const Duration(milliseconds: 500));
       Get.offAllNamed('/home');
     }
   }
@@ -78,6 +87,14 @@ class LoginController extends GetxController {
     isGoogleLoading.value = false;
 
     if (result != null) {
+      NotificationHelper.showSuccess(
+        title: 'Đăng nhập thành công',
+        message: 'Chào mừng ${result.user?.displayName ?? 'bạn'} đến với TomiAnime!',
+        duration: const Duration(seconds: 2),
+      );
+
+      // Đợi một chút để hiển thị thông báo rồi chuyển trang
+      await Future.delayed(const Duration(milliseconds: 500));
       Get.offAllNamed('/home');
     }
   }

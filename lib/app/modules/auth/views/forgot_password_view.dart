@@ -148,20 +148,83 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
   }
 
   Widget _buildResetButton() {
-    return Obx(() => GFButton(
-      onPressed: controller.isLoading.value
-        ? null
-        : controller.resetPassword,
-      text: controller.isLoading.value ? 'Đang gửi...' : 'Gửi email đặt lại',
-      size: GFSize.LARGE,
-      fullWidthButton: true,
-      color: const Color(0xFF6C5CE7),
-      shape: GFButtonShape.pills,
-      textStyle: TextStyle(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w600,
-      ),
-    ));
+    return Obx(() {
+      if (controller.isEmailSent.value) {
+        return Column(
+          children: [
+            // Thông báo đã gửi email
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00D4AA).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: const Color(0xFF00D4AA).withOpacity(0.3),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.mark_email_read,
+                    color: const Color(0xFF00D4AA),
+                    size: 32.sp,
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Email đã được gửi!',
+                    style: TextStyle(
+                      color: const Color(0xFF00D4AA),
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    'Vui lòng kiểm tra hộp thư của bạn',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16.h),
+            // Nút gửi lại
+            GFButton(
+              onPressed: controller.isLoading.value
+                ? null
+                : controller.resendEmail,
+              text: controller.isLoading.value ? 'Đang gửi lại...' : 'Gửi lại email',
+              size: GFSize.LARGE,
+              fullWidthButton: true,
+              color: Colors.grey[600] ?? Colors.grey,
+              shape: GFButtonShape.pills,
+              textStyle: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        );
+      }
+
+      return GFButton(
+        onPressed: controller.isLoading.value
+          ? null
+          : controller.resetPassword,
+        text: controller.isLoading.value ? 'Đang gửi...' : 'Gửi email đặt lại',
+        size: GFSize.LARGE,
+        fullWidthButton: true,
+        color: const Color(0xFF6C5CE7),
+        shape: GFButtonShape.pills,
+        textStyle: TextStyle(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    });
   }
 
   Widget _buildBackToLoginLink() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/auth_service.dart';
+import '../../../utils/notification_helper.dart';
 
 class RegisterController extends GetxController {
   final AuthService _authService = AuthService.instance;
@@ -83,11 +84,14 @@ class RegisterController extends GetxController {
     isRegisterLoading.value = false;
 
     if (result != null) {
-      Get.snackbar(
-        'Thành công',
-        'Tài khoản đã được tạo thành công',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showSuccess(
+        title: 'Tạo tài khoản thành công',
+        message: 'Chào mừng bạn đến với TomiAnime! Hãy khám phá thế giới anime tuyệt vời.',
+        duration: const Duration(seconds: 3),
       );
+
+      // Đợi một chút để hiển thị thông báo rồi chuyển trang
+      await Future.delayed(const Duration(milliseconds: 500));
       Get.offAllNamed('/home');
     }
   }
@@ -101,6 +105,14 @@ class RegisterController extends GetxController {
     isGoogleLoading.value = false;
 
     if (result != null) {
+      NotificationHelper.showSuccess(
+        title: 'Đăng ký thành công',
+        message: 'Chào mừng ${result.user?.displayName ?? 'bạn'} đến với TomiAnime!',
+        duration: const Duration(seconds: 3),
+      );
+
+      // Đợi một chút để hiển thị thông báo rồi chuyển trang
+      await Future.delayed(const Duration(milliseconds: 500));
       Get.offAllNamed('/home');
     }
   }
