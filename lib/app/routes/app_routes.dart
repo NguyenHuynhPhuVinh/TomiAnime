@@ -8,6 +8,7 @@ abstract class Routes {
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
   static const HOME = _Paths.HOME;
   static const ANIME = _Paths.ANIME;
+  static const ANIME_SEARCH = _Paths.ANIME_SEARCH;
   static const CARDS = _Paths.CARDS;
   static const ADVENTURE = _Paths.ADVENTURE;
   static const GACHA = _Paths.GACHA;
@@ -21,6 +22,7 @@ abstract class _Paths {
   static const FORGOT_PASSWORD = '/forgot-password';
   static const HOME = '/home';
   static const ANIME = '/anime';
+  static const ANIME_SEARCH = '/anime-search';
   static const CARDS = '/cards';
   static const ADVENTURE = '/adventure';
   static const GACHA = '/gacha';

@@ -10,6 +10,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/anime/bindings/anime_binding.dart';
 import '../modules/anime/views/anime_view.dart';
+import '../modules/anime/bindings/anime_search_binding.dart';
+import '../modules/anime/views/anime_search_view.dart';
 import '../modules/cards/bindings/cards_binding.dart';
 import '../modules/cards/views/cards_view.dart';
 import '../modules/adventure/bindings/adventure_binding.dart';
@@ -52,6 +54,12 @@ class AppPages {
       name: _Paths.ANIME,
       page: () => const AnimeView(),
       binding: AnimeBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.ANIME_SEARCH,
+      page: () => const AnimeSearchView(),
+      binding: AnimeSearchBinding(),
       middlewares: [AuthMiddleware()],
     ),
     GetPage(
