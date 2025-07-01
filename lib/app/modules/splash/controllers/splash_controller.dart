@@ -6,6 +6,8 @@ import '../../../../firebase_options.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/streaming_data_service.dart';
+import '../../../services/app_update_service.dart';
+import '../../../widgets/update_dialog.dart';
 
 class SplashController extends GetxController {
   // Observable variables
@@ -46,6 +48,11 @@ class SplashController extends GetxController {
       await streamingService.init();
       Get.put(streamingService);
 
+      // Initialize App Update Service
+      final updateService = AppUpdateService();
+      await updateService.init();
+      Get.put(updateService);
+
       print('✅ All services initialized');
 
       // Step 4: Check Authentication (thực tế)
@@ -69,16 +76,30 @@ class SplashController extends GetxController {
       final count = streamingService.getAvailableAnimeCount();
       print('📊 Available anime count: $count');
 
-      // Step 6: Finalization (thực tế)
+      // Step 6: Check for app updates (thực tế)
+      loadingText.value = 'Đang kiểm tra cập nhật...';
+      final appUpdateService = Get.find<AppUpdateService>();
+      final updateInfo = await appUpdateService.checkForUpdate();
+
+      // Step 7: Finalization (thực tế)
       loadingText.value = 'Đang hoàn tất...';
       print('🔍 Verifying services...');
       print('   Auth ready: ${authService.isLoggedIn}');
       print('   Streaming ready: ${count >= 0}');
+      print('   Update service ready: true');
 
       print('🎉 App initialization completed successfully');
 
-      // Navigate to appropriate screen
-      _navigateToNextScreen();
+      if (updateInfo != null) {
+        print('🆕 Update available: ${updateInfo.version}');
+        // Hiển thị dialog update NGAY TẠI SPLASH và BLOCK navigation
+        loadingText.value = 'Có bản cập nhật mới!';
+        _showUpdateDialogAndBlock(updateInfo);
+      } else {
+        print('✅ App is up to date');
+        // Chỉ navigate khi KHÔNG có update
+        _navigateToNextScreen();
+      }
     } catch (e) {
       print('❌ Error during initialization: $e');
       _handleInitializationError(e);
@@ -97,6 +118,19 @@ class SplashController extends GetxController {
     Future.delayed(const Duration(milliseconds: 600), () {
       textOpacity.value = 1.0;
     });
+  }
+
+  /// Hiển thị dialog update và block navigation
+  void _showUpdateDialogAndBlock(dynamic updateInfo) {
+    // Hiển thị dialog update ngay tại splash screen
+    UpdateDialog.showBlocking(
+      updateInfo,
+      onUpdateCompleted: () {
+        // Callback khi update hoàn tất hoặc user bỏ qua (nếu không force)
+        print('🔄 Update dialog closed, proceeding to app...');
+        _navigateToNextScreen();
+      },
+    );
   }
 
   void _navigateToNextScreen() {

@@ -42,6 +42,10 @@ dependencies:
   connectivity_plus: ^6.1.4
   url_launcher: ^6.3.1
   permission_handler: ^12.0.0+1
+  package_info_plus: ^8.3.0
+  path_provider: ^2.1.5
+  open_file: ^3.5.10
+  device_info_plus: ^11.5.0
 
   # Fetch API
   dio: ^5.8.0+1

@@ -13,7 +13,10 @@ class SplashView extends GetView<SplashController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
-      body: Container(
+      body: Stack(
+        children: [
+          // Main splash content
+          Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -48,6 +51,8 @@ class SplashView extends GetView<SplashController> {
             ),
           ),
         ),
+          ),
+        ],
       ),
     );
   }
