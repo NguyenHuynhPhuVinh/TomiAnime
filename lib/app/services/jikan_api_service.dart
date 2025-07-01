@@ -201,4 +201,14 @@ class JikanApiService {
       throw Exception('Lỗi khi lấy chi tiết anime: $e');
     }
   }
+
+  // Lấy anime relations (sequel, prequel, side story, etc.)
+  Future<AnimeRelationsResponse> getAnimeRelations(int malId) async {
+    try {
+      final response = await _dio.get('/anime/$malId/relations');
+      return AnimeRelationsResponse.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Lỗi khi lấy anime relations: $e');
+    }
+  }
 }

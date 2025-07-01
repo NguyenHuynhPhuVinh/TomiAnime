@@ -9,6 +9,7 @@ import '../../../models/anime_model.dart';
 import '../../../services/streaming_data_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/auth_service.dart';
+import '../../../services/jikan_api_service.dart';
 import '../../../models/anime_watch_status_model.dart';
 import '../../../utils/notification_helper.dart';
 import '../utils/anime_utils.dart';
@@ -72,11 +73,15 @@ class _AnimeDetailContent extends StatefulWidget {
 class _AnimeDetailContentState extends State<_AnimeDetailContent> {
   final Rxn<AnimeWatchStatusModel> watchStatus = Rxn<AnimeWatchStatusModel>();
   final RxBool isLoadingStatus = false.obs;
+  final Rxn<AnimeRelationsResponse> animeRelations = Rxn<AnimeRelationsResponse>();
+  final RxBool isLoadingRelations = false.obs;
+  final JikanApiService _apiService = JikanApiService();
 
   @override
   void initState() {
     super.initState();
     _loadWatchStatus();
+    _loadAnimeRelations();
   }
 
   /// Tải trạng thái xem anime
@@ -90,6 +95,30 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
       widget.anime.malId,
     );
     watchStatus.value = status;
+  }
+
+  /// Tải anime relations
+  Future<void> _loadAnimeRelations() async {
+    try {
+      isLoadingRelations.value = true;
+      final relations = await _apiService.getAnimeRelations(widget.anime.malId);
+      animeRelations.value = relations;
+
+      print('🔗 Loaded relations for ${widget.anime.title}:');
+      for (final relation in relations.data) {
+        print('   ${relation.relation}: ${relation.entry.length} entries');
+        for (final entry in relation.entry) {
+          if (entry.type == 'anime') {
+            print('     - ${entry.name} (MAL ID: ${entry.malId})');
+          }
+        }
+      }
+    } catch (e) {
+      print('❌ Error loading anime relations: $e');
+      // Không hiển thị error cho user vì relations không phải là tính năng quan trọng
+    } finally {
+      isLoadingRelations.value = false;
+    }
   }
 
   @override
@@ -254,11 +283,172 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
             _buildSynopsisSection(),
             // Nút xem anime và lưu anime
             _buildActionButtons(),
+            // Hiển thị anime relations
+            _buildRelationsSection(),
             SizedBox(height: 20.h),
           ],
         ),
       ),
     );
+  }
+
+  /// Widget hiển thị anime relations
+  Widget _buildRelationsSection() {
+    return Obx(() {
+      final relations = animeRelations.value;
+      if (relations == null || relations.data.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      // Lọc chỉ lấy anime relations (không lấy manga)
+      final filteredAnimeRelations = relations.data.where((relation) {
+        return relation.entry.any((entry) => entry.type == 'anime');
+      }).toList();
+
+      if (filteredAnimeRelations.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 20.h),
+          Text(
+            'Anime liên quan',
+            style: AppTextStyles.h5.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 12.h),
+          ...filteredAnimeRelations.map((relation) => _buildRelationGroup(relation)),
+        ],
+      );
+    });
+  }
+
+  /// Widget hiển thị một nhóm relation
+  Widget _buildRelationGroup(AnimeRelation relation) {
+    // Lọc chỉ lấy anime entries
+    final animeEntries = relation.entry.where((entry) => entry.type == 'anime').toList();
+
+    if (animeEntries.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _getRelationDisplayName(relation.relation),
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 6.h),
+        ...animeEntries.map((entry) => _buildRelationEntry(entry)),
+        SizedBox(height: 12.h),
+      ],
+    );
+  }
+
+  /// Widget hiển thị một anime relation entry
+  Widget _buildRelationEntry(AnimeRelationEntry entry) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      child: InkWell(
+        onTap: () => _onRelationTapped(entry),
+        borderRadius: BorderRadius.circular(8.r),
+        child: Container(
+          padding: EdgeInsets.all(12.r),
+          decoration: BoxDecoration(
+            color: AppColors.animeTheme.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(
+              color: AppColors.animeTheme.withOpacity(0.2),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Iconsax.play_circle,
+                color: AppColors.animeTheme,
+                size: 20.r,
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Text(
+                  entry.name,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(
+                Iconsax.arrow_right_3,
+                color: AppColors.textSecondary,
+                size: 16.r,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Lấy tên hiển thị cho relation type
+  String _getRelationDisplayName(String relation) {
+    switch (relation.toLowerCase()) {
+      case 'sequel':
+        return 'Mùa kế tiếp';
+      case 'prequel':
+        return 'Mùa trước';
+      case 'side story':
+        return 'Câu chuyện phụ';
+      case 'alternative version':
+        return 'Phiên bản khác';
+      case 'alternative setting':
+        return 'Bối cảnh khác';
+      case 'spin-off':
+        return 'Spin-off';
+      case 'adaptation':
+        return 'Chuyển thể';
+      case 'summary':
+        return 'Tóm tắt';
+      case 'parent story':
+        return 'Câu chuyện gốc';
+      case 'full story':
+        return 'Câu chuyện đầy đủ';
+      case 'other':
+        return 'Khác';
+      default:
+        return relation;
+    }
+  }
+
+  /// Xử lý khi nhấn vào anime relation
+  Future<void> _onRelationTapped(AnimeRelationEntry entry) async {
+    try {
+      // Đóng modal hiện tại
+      Get.back();
+
+      // Lấy chi tiết anime từ API
+      final animeDetails = await _apiService.getAnimeDetails(entry.malId);
+
+      // Hiển thị modal mới với anime details
+      AnimeDetailModal.show(animeDetails);
+    } catch (e) {
+      print('❌ Error loading related anime details: $e');
+      NotificationHelper.showError(
+        title: 'Lỗi',
+        message: 'Không thể tải thông tin anime này',
+        duration: const Duration(seconds: 2),
+      );
+    }
   }
 
   /// Widget hiển thị tóm tắt (chỉ khi anime không có nút xem)

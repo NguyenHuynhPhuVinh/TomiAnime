@@ -199,6 +199,61 @@ class AnimeStreamingModel {
   }
 }
 
+// Model cho anime relations
+class AnimeRelationsResponse {
+  final List<AnimeRelation> data;
+
+  AnimeRelationsResponse({
+    required this.data,
+  });
+
+  factory AnimeRelationsResponse.fromJson(Map<String, dynamic> json) {
+    return AnimeRelationsResponse(
+      data: (json['data'] as List?)?.map((e) => AnimeRelation.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
+class AnimeRelation {
+  final String relation;
+  final List<AnimeRelationEntry> entry;
+
+  AnimeRelation({
+    required this.relation,
+    required this.entry,
+  });
+
+  factory AnimeRelation.fromJson(Map<String, dynamic> json) {
+    return AnimeRelation(
+      relation: json['relation'] ?? '',
+      entry: (json['entry'] as List?)?.map((e) => AnimeRelationEntry.fromJson(e)).toList() ?? [],
+    );
+  }
+}
+
+class AnimeRelationEntry {
+  final int malId;
+  final String type;
+  final String name;
+  final String url;
+
+  AnimeRelationEntry({
+    required this.malId,
+    required this.type,
+    required this.name,
+    required this.url,
+  });
+
+  factory AnimeRelationEntry.fromJson(Map<String, dynamic> json) {
+    return AnimeRelationEntry(
+      malId: json['mal_id'] ?? 0,
+      type: json['type'] ?? '',
+      name: json['name'] ?? '',
+      url: json['url'] ?? '',
+    );
+  }
+}
+
 // Model cho streaming sync data
 class StreamingSyncData {
   final String version;
