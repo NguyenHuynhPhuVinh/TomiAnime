@@ -6,7 +6,7 @@ import 'package:shimmer/shimmer.dart';
 import '../controllers/anime_controller.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/anime_card.dart';
+import '../widgets/anime_card.dart';
 
 class AnimeView extends GetView<AnimeController> {
   const AnimeView({Key? key}) : super(key: key);

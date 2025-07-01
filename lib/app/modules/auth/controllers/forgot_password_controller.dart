@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/notification_helper.dart';
+import '../utils/auth_validators.dart';
 
 class ForgotPasswordController extends GetxController {
   final AuthService _authService = AuthService.instance;
@@ -23,15 +24,7 @@ class ForgotPasswordController extends GetxController {
   }
   
   // Email validation
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Vui lòng nhập email';
-    }
-    if (!GetUtils.isEmail(value)) {
-      return 'Email không hợp lệ';
-    }
-    return null;
-  }
+  String? validateEmail(String? value) => AuthValidators.validateEmail(value);
   
   // Reset password
   Future<void> resetPassword() async {

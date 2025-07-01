@@ -8,6 +8,9 @@ import '../controllers/forgot_password_controller.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../theme/app_decorations.dart';
+import '../widgets/auth_header.dart';
+import '../widgets/auth_email_field.dart';
+import '../widgets/auth_navigation_link.dart';
 
 class ForgotPasswordView extends GetView<ForgotPasswordController> {
   const ForgotPasswordView({super.key});
@@ -50,27 +53,10 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        Container(
-          width: 80.w,
-          height: 80.w,
-          decoration: BoxDecoration(
-            gradient: AppDecorations.primaryGradient,
-            borderRadius: AppDecorations.radiusXL,
-          ),
-          child: Icon(
-            Iconsax.key,
-            size: 40.sp,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        SizedBox(height: 24.h),
-        Text(
-          'Quên mật khẩu?',
-          style: AppTextStyles.appTitle,
-        ),
-      ],
+    return const AuthHeader(
+      icon: Iconsax.key,
+      title: 'Quên mật khẩu?',
+      subtitle: '',
     );
   }
 
@@ -111,28 +97,10 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
   }
 
   Widget _buildEmailField() {
-    return Container(
-      decoration: AppDecorations.inputContainer,
-      child: TextFormField(
-        controller: controller.emailController,
-        validator: controller.validateEmail,
-        keyboardType: TextInputType.emailAddress,
-        style: AppTextStyles.bodyLarge,
-        decoration: InputDecoration(
-          hintText: 'Nhập email của bạn',
-          hintStyle: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textTertiary),
-          prefixIcon: Icon(
-            Iconsax.sms,
-            color: AppColors.textTertiary,
-            size: 20.sp,
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 16.h,
-          ),
-        ),
-      ),
+    return AuthEmailField(
+      controller: controller.emailController,
+      validator: controller.validateEmail,
+      hintText: 'Nhập email của bạn',
     );
   }
 
@@ -208,21 +176,10 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
   }
 
   Widget _buildBackToLoginLink() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Nhớ mật khẩu rồi? ',
-          style: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textSecondary),
-        ),
-        GestureDetector(
-          onTap: controller.goToLogin,
-          child: Text(
-            'Đăng nhập',
-            style: AppTextStyles.withColor(AppTextStyles.buttonMedium, AppColors.primary),
-          ),
-        ),
-      ],
+    return AuthNavigationLink(
+      prefixText: 'Nhớ mật khẩu rồi? ',
+      linkText: 'Đăng nhập',
+      onTap: controller.goToLogin,
     );
   }
 }

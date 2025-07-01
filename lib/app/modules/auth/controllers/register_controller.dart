@@ -2,72 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/notification_helper.dart';
+import 'base_auth_controller.dart';
+import '../utils/auth_validators.dart';
 
-class RegisterController extends GetxController {
+class RegisterController extends BaseAuthController {
   final AuthService _authService = AuthService.instance;
-  
-  // Form controllers
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+
+  // Additional form controller for register
   final confirmPasswordController = TextEditingController();
-  
-  // Form key
-  final formKey = GlobalKey<FormState>();
-  
-  // Observable states
+
+  // Observable states specific to register
   final isRegisterLoading = false.obs;
-  final isGoogleLoading = false.obs;
-  final isPasswordVisible = false.obs;
   final isConfirmPasswordVisible = false.obs;
-  
+
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();
   }
   
-  // Toggle password visibility
-  void togglePasswordVisibility() {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  }
-  
+  // Toggle confirm password visibility
   void toggleConfirmPasswordVisibility() {
     isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
   }
-  
-  // Email validation
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Vui lòng nhập email';
-    }
-    if (!GetUtils.isEmail(value)) {
-      return 'Email không hợp lệ';
-    }
-    return null;
-  }
-  
-  // Password validation
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Vui lòng nhập mật khẩu';
-    }
-    if (value.length < 6) {
-      return 'Mật khẩu phải có ít nhất 6 ký tự';
-    }
-    return null;
-  }
-  
+
   // Confirm password validation
   String? validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Vui lòng xác nhận mật khẩu';
-    }
-    if (value != passwordController.text) {
-      return 'Mật khẩu xác nhận không khớp';
-    }
-    return null;
+    return AuthValidators.validateConfirmPassword(value, passwordController.text);
   }
   
   // Sign up with email and password
@@ -96,26 +57,13 @@ class RegisterController extends GetxController {
     }
   }
   
-  // Sign in with Google
-  Future<void> signInWithGoogle() async {
-    isGoogleLoading.value = true;
+  // Override methods from BaseAuthController
+  @override
+  String getGoogleSuccessTitle() => 'Đăng ký thành công';
 
-    final result = await _authService.signInWithGoogle();
-
-    isGoogleLoading.value = false;
-
-    if (result != null) {
-      NotificationHelper.showSuccess(
-        title: 'Đăng ký thành công',
-        message: 'Chào mừng ${result.user?.displayName ?? 'bạn'} đến với TomiAnime!',
-        duration: const Duration(seconds: 3),
-      );
-
-      // Đợi một chút để hiển thị thông báo rồi chuyển trang
-      await Future.delayed(const Duration(milliseconds: 500));
-      Get.offAllNamed('/home');
-    }
-  }
+  @override
+  String getGoogleSuccessMessage(dynamic result) =>
+    'Chào mừng ${result.user?.displayName ?? 'bạn'} đến với TomiAnime!';
   
   // Navigate to login screen
   void goToLogin() {

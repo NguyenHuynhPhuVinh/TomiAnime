@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-import '../models/anime_model.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
+import '../../../models/anime_model.dart';
 import '../utils/anime_utils.dart';
 
 class AnimeDetailModal {

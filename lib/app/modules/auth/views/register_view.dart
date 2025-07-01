@@ -7,7 +7,11 @@ import 'package:iconsax/iconsax.dart';
 import '../controllers/register_controller.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../theme/app_decorations.dart';
+import '../widgets/auth_header.dart';
+import '../widgets/auth_email_field.dart';
+import '../widgets/auth_password_field.dart';
+import '../widgets/auth_google_button.dart';
+import '../widgets/auth_navigation_link.dart';
 
 class RegisterView extends GetView<RegisterController> {
   const RegisterView({super.key});
@@ -50,34 +54,10 @@ class RegisterView extends GetView<RegisterController> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        Container(
-          width: 80.w,
-          height: 80.w,
-          decoration: BoxDecoration(
-            gradient: AppDecorations.primaryGradient,
-            borderRadius: AppDecorations.radiusXL,
-          ),
-          child: Icon(
-            Iconsax.user_add,
-            size: 40.sp,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        SizedBox(height: 24.h),
-        Text(
-          'Tạo tài khoản',
-          style: AppTextStyles.appTitle,
-        ),
-        SizedBox(height: 8.h),
-        Text(
-          'Tham gia cộng đồng TomiAnime',
-          style: AppTextStyles.bodyLarge.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-      ],
+    return const AuthHeader(
+      icon: Iconsax.user_add,
+      title: 'Tạo tài khoản',
+      subtitle: 'Tham gia cộng đồng TomiAnime',
     );
   }
 
@@ -99,193 +79,62 @@ class RegisterView extends GetView<RegisterController> {
   }
 
   Widget _buildEmailField() {
-    return Container(
-      decoration: AppDecorations.inputContainer,
-      child: TextFormField(
-        controller: controller.emailController,
-        validator: controller.validateEmail,
-        keyboardType: TextInputType.emailAddress,
-        style: AppTextStyles.bodyLarge,
-        decoration: InputDecoration(
-          hintText: 'Email',
-          hintStyle: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textTertiary),
-          prefixIcon: Icon(
-            Iconsax.sms,
-            color: AppColors.textTertiary,
-            size: 20.sp,
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 16.h,
-          ),
-        ),
-      ),
+    return AuthEmailField(
+      controller: controller.emailController,
+      validator: controller.validateEmail,
     );
   }
 
   Widget _buildPasswordField() {
-    return Container(
-      decoration: AppDecorations.inputContainer,
-      child: Obx(() => TextFormField(
-        controller: controller.passwordController,
-        validator: controller.validatePassword,
-        obscureText: !controller.isPasswordVisible.value,
-        style: AppTextStyles.bodyLarge,
-        decoration: InputDecoration(
-          hintText: 'Mật khẩu',
-          hintStyle: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textTertiary),
-          prefixIcon: Icon(
-            Iconsax.lock,
-            color: AppColors.textTertiary,
-            size: 20.sp,
-          ),
-          suffixIcon: GestureDetector(
-            onTap: controller.togglePasswordVisibility,
-            child: Icon(
-              controller.isPasswordVisible.value
-                ? Iconsax.eye
-                : Iconsax.eye_slash,
-              color: AppColors.textTertiary,
-              size: 20.sp,
-            ),
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 16.h,
-          ),
-        ),
-      )),
+    return AuthPasswordField(
+      controller: controller.passwordController,
+      validator: controller.validatePassword,
+      isPasswordVisible: controller.isPasswordVisible,
+      onToggleVisibility: controller.togglePasswordVisibility,
     );
   }
 
   Widget _buildConfirmPasswordField() {
-    return Container(
-      decoration: AppDecorations.inputContainer,
-      child: Obx(() => TextFormField(
-        controller: controller.confirmPasswordController,
-        validator: controller.validateConfirmPassword,
-        obscureText: !controller.isConfirmPasswordVisible.value,
-        style: AppTextStyles.bodyLarge,
-        decoration: InputDecoration(
-          hintText: 'Xác nhận mật khẩu',
-          hintStyle: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textTertiary),
-          prefixIcon: Icon(
-            Iconsax.lock,
-            color: AppColors.textTertiary,
-            size: 20.sp,
-          ),
-          suffixIcon: GestureDetector(
-            onTap: controller.toggleConfirmPasswordVisibility,
-            child: Icon(
-              controller.isConfirmPasswordVisible.value
-                ? Iconsax.eye
-                : Iconsax.eye_slash,
-              color: AppColors.textTertiary,
-              size: 20.sp,
-            ),
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 16.h,
-          ),
-        ),
-      )),
+    return AuthPasswordField(
+      controller: controller.confirmPasswordController,
+      validator: controller.validateConfirmPassword,
+      hintText: 'Xác nhận mật khẩu',
+      isPasswordVisible: controller.isConfirmPasswordVisible,
+      onToggleVisibility: controller.toggleConfirmPasswordVisibility,
     );
   }
 
   Widget _buildRegisterButton() {
-    return Obx(() => GFButton(
-      onPressed: controller.isRegisterLoading.value
-        ? null
-        : controller.signUpWithEmailAndPassword,
-      text: controller.isRegisterLoading.value ? 'Đang tạo tài khoản...' : 'Tạo tài khoản',
-      size: GFSize.LARGE,
-      fullWidthButton: true,
-      color: AppColors.buttonPrimary,
-      shape: GFButtonShape.pills,
-      textStyle: AppTextStyles.buttonLarge,
-    ));
+    return Obx(
+      () => GFButton(
+        onPressed: controller.isRegisterLoading.value
+            ? null
+            : controller.signUpWithEmailAndPassword,
+        text: controller.isRegisterLoading.value
+            ? 'Đang tạo tài khoản...'
+            : 'Tạo tài khoản',
+        size: GFSize.LARGE,
+        fullWidthButton: true,
+        color: AppColors.buttonPrimary,
+        shape: GFButtonShape.pills,
+        textStyle: AppTextStyles.buttonLarge,
+      ),
+    );
   }
 
   Widget _buildGoogleSignInButton() {
-    return Obx(() => Container(
-      width: double.infinity,
-      height: 50.h,
-      decoration: BoxDecoration(
-        color: AppColors.textPrimary,
-        borderRadius: AppDecorations.radiusXL,
-        boxShadow: AppDecorations.shadowLight,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: controller.isGoogleLoading.value
-            ? null
-            : controller.signInWithGoogle,
-          borderRadius: BorderRadius.circular(25.r),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (controller.isGoogleLoading.value)
-                  SizedBox(
-                    width: 20.w,
-                    height: 20.w,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.textTertiary),
-                    ),
-                  )
-                else
-                  Container(
-                    width: 20.w,
-                    height: 20.w,
-                    decoration: BoxDecoration(
-                      color: AppColors.error,
-                      borderRadius: AppDecorations.radiusXS,
-                    ),
-                    child: Center(
-                      child: Text(
-                        'G',
-                        style: AppTextStyles.withSize(AppTextStyles.buttonSmall, 12),
-                      ),
-                    ),
-                  ),
-                SizedBox(width: 12.w),
-                Text(
-                  controller.isGoogleLoading.value
-                    ? 'Đang đăng nhập...'
-                    : 'Đăng ký với Google',
-                  style: AppTextStyles.withColor(AppTextStyles.buttonLarge, AppColors.backgroundPrimary),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ));
+    return AuthGoogleButton(
+      onPressed: controller.signInWithGoogle,
+      isLoading: controller.isGoogleLoading,
+      text: 'Đăng ký với Google',
+    );
   }
 
   Widget _buildLoginLink() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Đã có tài khoản? ',
-          style: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textSecondary),
-        ),
-        GestureDetector(
-          onTap: controller.goToLogin,
-          child: Text(
-            'Đăng nhập',
-            style: AppTextStyles.withColor(AppTextStyles.buttonMedium, AppColors.primary),
-          ),
-        ),
-      ],
+    return AuthNavigationLink(
+      prefixText: 'Đã có tài khoản? ',
+      linkText: 'Đăng nhập',
+      onTap: controller.goToLogin,
     );
   }
 }
