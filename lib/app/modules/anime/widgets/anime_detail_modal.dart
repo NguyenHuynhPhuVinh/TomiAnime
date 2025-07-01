@@ -292,26 +292,24 @@ class _AnimeDetailContent extends StatelessWidget {
     final nguoncUrl = streamingService.getNguoncUrl(anime.malId);
 
     if (nguoncUrl != null) {
-      // Tạm thời chỉ hiển thị thông báo
-      Get.snackbar(
-        'Xem Anime',
-        'Sẽ mở: ${anime.title}\nURL: $nguoncUrl',
-        backgroundColor: AppColors.animeTheme,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-        snackPosition: SnackPosition.BOTTOM,
-        margin: EdgeInsets.all(16.r),
-        borderRadius: 12.r,
-        icon: Icon(
-          Iconsax.play,
-          color: Colors.white,
-          size: 24.r,
-        ),
-      );
-
       // Log để debug
-      print('Watch anime: ${anime.title} (MAL ID: ${anime.malId})');
-      print('Nguonc URL: $nguoncUrl');
+      print('🎬 Navigating to watch screen:');
+      print('   📋 MAL ID: ${anime.malId}');
+      print('   🏷️  Title: ${anime.title}');
+      print('   🔗 Nguonc URL: $nguoncUrl');
+
+      // Đóng modal trước khi navigate
+      Get.back();
+
+      // Navigate đến anime watch screen
+      Get.toNamed(
+        '/anime-watch',
+        arguments: {
+          'nguoncUrl': nguoncUrl,
+          'animeTitle': anime.title,
+          'malId': anime.malId,
+        },
+      );
     } else {
       Get.snackbar(
         'Lỗi',
