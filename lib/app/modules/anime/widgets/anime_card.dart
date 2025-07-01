@@ -23,6 +23,7 @@ class AnimeCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: _getStatusBorderColor(), width: 2.w),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -152,5 +153,21 @@ class AnimeCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getStatusBorderColor() {
+    switch (anime.status.toLowerCase()) {
+      case 'currently airing':
+      case 'airing':
+        return Colors.green; // Xanh lá cho đang phát sóng
+      case 'finished airing':
+      case 'complete':
+        return Colors.blue; // Xanh dương cho hoàn thành
+      case 'not yet aired':
+      case 'upcoming':
+        return Colors.orange; // Cam cho sắp ra mắt
+      default:
+        return AppColors.surface.withOpacity(0.3); // Màu mặc định
+    }
   }
 }

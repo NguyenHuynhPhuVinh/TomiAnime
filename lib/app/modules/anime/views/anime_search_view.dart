@@ -127,42 +127,131 @@ class AnimeSearchView extends GetView<AnimeSearchController> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       color: AppColors.surface,
-      child: Row(
-        children: [
-          Obx(
-            () => _buildCompactDropdown(
-              value: controller.selectedType.value,
-              options: controller.typeOptions,
-              onChanged: (value) {
-                controller.selectedType.value = value!;
-                controller.onFilterChanged();
-              },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            Obx(
+              () => _buildCompactDropdown(
+                value: controller.selectedType.value,
+                options: controller.typeOptions,
+                icon: Iconsax.category,
+                onChanged: (value) {
+                  controller.selectedType.value = value!;
+                  controller.onFilterChanged();
+                },
+              ),
             ),
-          ),
-          SizedBox(width: 8.w),
-          Obx(
-            () => _buildCompactDropdown(
-              value: controller.selectedStatus.value,
-              options: controller.statusOptions,
-              onChanged: (value) {
-                controller.selectedStatus.value = value!;
-                controller.onFilterChanged();
-              },
+            SizedBox(width: 8.w),
+            Obx(
+              () => _buildCompactDropdown(
+                value: controller.selectedStatus.value,
+                options: controller.statusOptions,
+                icon: Iconsax.status,
+                onChanged: (value) {
+                  controller.selectedStatus.value = value!;
+                  controller.onFilterChanged();
+                },
+              ),
             ),
-          ),
-          const Spacer(),
-          Obx(
-            () => controller.searchResults.isNotEmpty
-                ? Text(
-                    '${controller.searchResults.length} kết quả',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.animeTheme,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                : const SizedBox(),
-          ),
-        ],
+            SizedBox(width: 8.w),
+            Obx(
+              () => _buildCompactDropdown(
+                value: controller.selectedRating.value,
+                options: controller.ratingOptions,
+                icon: Iconsax.shield_tick,
+                onChanged: (value) {
+                  controller.selectedRating.value = value!;
+                  controller.onFilterChanged();
+                },
+              ),
+            ),
+            SizedBox(width: 8.w),
+            Obx(
+              () => _buildCompactDropdown(
+                value: controller.selectedScore.value,
+                options: controller.scoreOptions,
+                icon: Iconsax.star,
+                onChanged: (value) {
+                  controller.selectedScore.value = value!;
+                  controller.onFilterChanged();
+                },
+              ),
+            ),
+            SizedBox(width: 8.w),
+            // Reset filters button
+            Obx(
+              () => (controller.selectedType.value != 'all' ||
+                      controller.selectedStatus.value != 'all' ||
+                      controller.selectedRating.value != 'all' ||
+                      controller.selectedScore.value != 'all')
+                  ? GestureDetector(
+                      onTap: () => controller.resetFilters(),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.textSecondary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12.r),
+                          border: Border.all(
+                            color: AppColors.textSecondary.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Iconsax.refresh,
+                              size: 12.r,
+                              color: AppColors.textSecondary,
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              'Reset',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
+            ),
+            SizedBox(width: 16.w),
+            Obx(
+              () => controller.searchResults.isNotEmpty
+                  ? Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      decoration: BoxDecoration(
+                        color: AppColors.animeTheme.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Iconsax.search_status,
+                            size: 12.r,
+                            color: AppColors.animeTheme,
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            '${controller.searchResults.length} kết quả',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.animeTheme,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -171,6 +260,7 @@ class AnimeSearchView extends GetView<AnimeSearchController> {
     required String value,
     required List<Map<String, String>> options,
     required ValueChanged<String?> onChanged,
+    required IconData icon,
   }) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -179,32 +269,43 @@ class AnimeSearchView extends GetView<AnimeSearchController> {
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(color: AppColors.animeTheme.withOpacity(0.3)),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          icon: Icon(
-            Iconsax.arrow_down_1,
-            size: 12.r,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14.r,
             color: AppColors.animeTheme,
           ),
-          style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.animeTheme,
-            fontWeight: FontWeight.w600,
-            fontSize: 11.sp,
-          ),
-          dropdownColor: AppColors.surface,
-          isDense: true,
-          items: options.map((option) {
-            return DropdownMenuItem<String>(
-              value: option['value'],
-              child: Text(
-                option['label']!,
-                style: AppTextStyles.bodySmall.copyWith(fontSize: 11.sp),
+          SizedBox(width: 4.w),
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              icon: Icon(
+                Iconsax.arrow_down_1,
+                size: 12.r,
+                color: AppColors.animeTheme,
               ),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.animeTheme,
+                fontWeight: FontWeight.w600,
+                fontSize: 11.sp,
+              ),
+              dropdownColor: AppColors.surface,
+              isDense: true,
+              items: options.map((option) {
+                return DropdownMenuItem<String>(
+                  value: option['value'],
+                  child: Text(
+                    option['label']!,
+                    style: AppTextStyles.bodySmall.copyWith(fontSize: 11.sp),
+                  ),
+                );
+              }).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ],
       ),
     );
   }

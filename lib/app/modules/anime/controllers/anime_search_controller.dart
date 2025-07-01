@@ -57,6 +57,16 @@ class AnimeSearchController extends GetxController {
     {'value': 'rx', 'label': 'Rx - Hentai'},
   ];
 
+  final List<Map<String, String>> scoreOptions = [
+    {'value': 'all', 'label': 'Tất cả'},
+    {'value': '9+', 'label': '9.0+ ⭐'},
+    {'value': '8+', 'label': '8.0+ ⭐'},
+    {'value': '7+', 'label': '7.0+ ⭐'},
+    {'value': '6+', 'label': '6.0+ ⭐'},
+  ];
+
+  final RxString selectedScore = 'all'.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -103,12 +113,31 @@ class AnimeSearchController extends GetxController {
       }
       error.value = '';
 
+      // Xử lý score filter
+      double? apiMinScore;
+      if (selectedScore.value != 'all') {
+        switch (selectedScore.value) {
+          case '9+':
+            apiMinScore = 9.0;
+            break;
+          case '8+':
+            apiMinScore = 8.0;
+            break;
+          case '7+':
+            apiMinScore = 7.0;
+            break;
+          case '6+':
+            apiMinScore = 6.0;
+            break;
+        }
+      }
+
       final response = await _apiService.searchAnime(
         query: currentQuery.value,
         type: selectedType.value == 'all' ? null : selectedType.value,
         status: selectedStatus.value == 'all' ? null : selectedStatus.value,
         rating: selectedRating.value == 'all' ? null : selectedRating.value,
-        minScore: minScore.value > 0 ? minScore.value : null,
+        minScore: apiMinScore ?? (minScore.value > 0 ? minScore.value : null),
         maxScore: maxScore.value < 10 ? maxScore.value : null,
         page: currentPage.value,
         limit: 25,
@@ -195,6 +224,7 @@ class AnimeSearchController extends GetxController {
     selectedType.value = 'all';
     selectedStatus.value = 'all';
     selectedRating.value = 'all';
+    selectedScore.value = 'all';
     minScore.value = 0.0;
     maxScore.value = 10.0;
     sfw.value = true;
