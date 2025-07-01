@@ -39,9 +39,9 @@ class AuthService extends GetxService {
         password: password,
       );
 
-      // Save user to Firestore
+      // Save user to Firestore (không cần kiểm tra trùng vì đây là đăng nhập)
       if (credential.user != null) {
-        await _saveUserToFirestore(credential.user!);
+        await _saveUserToFirestore(credential.user!, provider: 'email');
       }
 
       return credential;
@@ -63,6 +63,17 @@ class AuthService extends GetxService {
     required String password,
   }) async {
     try {
+      // Kiểm tra xem email đã được đăng ký với Google chưa
+      final existingUser = await _firestoreService.getUserByEmail(email);
+      if (existingUser != null && existingUser.hasProvider('google')) {
+        NotificationHelper.showError(
+          title: 'Email đã được sử dụng',
+          message: 'Email này đã được đăng ký với tài khoản Google. Vui lòng đăng nhập bằng Google hoặc sử dụng email khác.',
+          duration: const Duration(seconds: 5),
+        );
+        return null;
+      }
+
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -70,7 +81,7 @@ class AuthService extends GetxService {
 
       // Save user to Firestore
       if (credential.user != null) {
-        await _saveUserToFirestore(credential.user!);
+        await _saveUserToFirestore(credential.user!, provider: 'email');
       }
 
       return credential;
@@ -93,30 +104,43 @@ class AuthService extends GetxService {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       print('🔍 Google user: $googleUser');
-      
+
       if (googleUser == null) {
         // User canceled the sign-in
         print('🔍 User canceled Google Sign-In');
         return null;
       }
-      
+
       // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      
+
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
-      
+
+      // Kiểm tra xem email đã được đăng ký với email/password chưa
+      final email = googleUser.email;
+      final existingUser = await _firestoreService.getUserByEmail(email);
+
       // Sign in to Firebase with the Google credential
       print('🔍 Signing in to Firebase...');
       final result = await _auth.signInWithCredential(credential);
       print('🔍 Firebase sign-in successful: ${result.user?.email}');
 
-      // Save user to Firestore
       if (result.user != null) {
-        await _saveUserToFirestore(result.user!);
+        if (existingUser != null && existingUser.hasProvider('email')) {
+          // Email đã được đăng ký với email/password, sử dụng dữ liệu từ tài khoản email
+          NotificationHelper.showInfo(
+            title: 'Sử dụng dữ liệu tài khoản email',
+            message: 'Email này đã có tài khoản email. Dữ liệu từ tài khoản email sẽ được sử dụng.',
+            duration: const Duration(seconds: 4),
+          );
+        } else {
+          // Tài khoản Google mới
+          await _saveUserToFirestore(result.user!, provider: 'google');
+        }
       }
 
       return result;
@@ -226,12 +250,13 @@ class AuthService extends GetxService {
   }
 
   // Save user to Firestore (chỉ tạo mới nếu chưa tồn tại)
-  Future<void> _saveUserToFirestore(User user) async {
+  Future<void> _saveUserToFirestore(User user, {String provider = 'email'}) async {
     try {
       final userModel = UserModel.fromFirebaseUser(
         user.uid,
         user.email ?? '',
         user.displayName,
+        provider: provider,
       );
 
       await _firestoreService.saveUserIfNotExists(userModel);
@@ -239,4 +264,6 @@ class AuthService extends GetxService {
       print('❌ Error saving user to Firestore: $e');
     }
   }
+
+
 }

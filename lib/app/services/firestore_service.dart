@@ -54,4 +54,25 @@ class FirestoreService extends GetxService {
       return null;
     }
   }
+
+  /// Tìm user theo email
+  Future<UserModel?> getUserByEmail(String email) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return UserModel.fromFirestore(querySnapshot.docs.first);
+      }
+      return null;
+    } catch (e) {
+      print('❌ Error getting user by email: $e');
+      return null;
+    }
+  }
+
+
 }

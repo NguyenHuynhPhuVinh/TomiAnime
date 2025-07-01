@@ -5,20 +5,28 @@ class UserModel {
   final String email;
   final String? displayName;
   final DateTime createdAt;
+  final List<String> providers; // Danh sách các provider: ['email', 'google']
 
   UserModel({
     required this.uid,
     required this.email,
     this.displayName,
     required this.createdAt,
+    this.providers = const [],
   });
 
-  factory UserModel.fromFirebaseUser(String uid, String email, String? displayName) {
+  factory UserModel.fromFirebaseUser(
+    String uid,
+    String email,
+    String? displayName, {
+    String provider = 'email',
+  }) {
     return UserModel(
       uid: uid,
       email: email,
       displayName: displayName,
       createdAt: DateTime.now(),
+      providers: [provider],
     );
   }
 
@@ -29,6 +37,7 @@ class UserModel {
       email: data['email'] ?? '',
       displayName: data['displayName'],
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      providers: List<String>.from(data['providers'] ?? []),
     );
   }
 
@@ -38,6 +47,12 @@ class UserModel {
       'email': email,
       'displayName': displayName,
       'createdAt': Timestamp.fromDate(createdAt),
+      'providers': providers,
     };
+  }
+
+  /// Kiểm tra xem user có provider nào đó không
+  bool hasProvider(String provider) {
+    return providers.contains(provider);
   }
 }
