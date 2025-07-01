@@ -9,6 +9,7 @@ import 'app/routes/app_pages.dart';
 import 'app/services/auth_service.dart';
 import 'app/services/auth_guard.dart';
 import 'app/services/firestore_service.dart';
+import 'app/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,17 +41,7 @@ class TomiAnimeApp extends StatelessWidget {
       builder: (context, child) {
         return GetMaterialApp(
           title: 'TomiAnime',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: true,
-            appBarTheme: const AppBarTheme(
-              centerTitle: true,
-              elevation: 0,
-            ),
-          ),
+          theme: AppTheme.themeData,
           themeMode: ThemeMode.dark,
           initialRoute: AuthGuard.getInitialRoute(),
           getPages: AppPages.routes,

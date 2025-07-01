@@ -5,6 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../controllers/home_controller.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
+import '../../../theme/app_decorations.dart';
 import '../../anime/views/anime_view.dart';
 import '../../cards/views/cards_view.dart';
 import '../../adventure/views/adventure_view.dart';
@@ -47,26 +50,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildMobileNavBar() {
     return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, -2),
-            blurRadius: 20.r,
-            color: Colors.purple.withOpacity(0.2),
-          ),
-        ],
-        border: Border(
-          top: BorderSide(
-            color: Colors.purple.withOpacity(0.3),
-            width: 1,
-          ),
-        ),
-      ),
+      decoration: AppDecorations.navBarDecoration,
       child: SafeArea(
         child: Container(
           height: 75.h,
@@ -75,33 +59,33 @@ class HomeView extends GetView<HomeController> {
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildGameNavItem(0, Iconsax.play, 'Anime', Colors.red, true),
+                _buildGameNavItem(0, Iconsax.play, 'Anime', AppColors.animeTheme, true),
                 _buildGameNavItem(
                   1,
                   Iconsax.card,
                   'Cards',
-                  Colors.blue,
+                  AppColors.cardsTheme,
                   true,
                 ),
                 _buildGameNavItem(
                   2,
                   Iconsax.map,
                   'Quest',
-                  Colors.green,
+                  AppColors.adventureTheme,
                   true,
                 ),
                 _buildGameNavItem(
                   3,
                   Iconsax.gift,
                   'Gacha',
-                  Colors.purple,
+                  AppColors.gachaTheme,
                   true,
                 ),
                 _buildGameNavItem(
                   4,
                   Iconsax.profile_circle,
                   'Profile',
-                  Colors.orange,
+                  AppColors.accountTheme,
                   true,
                 ),
               ],
@@ -114,26 +98,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildTabletNavBar() {
     return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, -2),
-            blurRadius: 20.r,
-            color: Colors.purple.withOpacity(0.2),
-          ),
-        ],
-        border: Border(
-          top: BorderSide(
-            color: Colors.purple.withOpacity(0.3),
-            width: 1,
-          ),
-        ),
-      ),
+      decoration: AppDecorations.navBarDecoration,
       child: SafeArea(
         child: Container(
           height: 80.h,
@@ -142,33 +107,33 @@ class HomeView extends GetView<HomeController> {
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildGameNavItem(0, Iconsax.play, 'Anime', Colors.red, false),
+                _buildGameNavItem(0, Iconsax.play, 'Anime', AppColors.animeTheme, false),
                 _buildGameNavItem(
                   1,
                   Iconsax.card,
                   'Cards',
-                  Colors.blue,
+                  AppColors.cardsTheme,
                   false,
                 ),
                 _buildGameNavItem(
                   2,
                   Iconsax.map,
                   'Quest',
-                  Colors.green,
+                  AppColors.adventureTheme,
                   false,
                 ),
                 _buildGameNavItem(
                   3,
                   Iconsax.gift,
                   'Gacha',
-                  Colors.purple,
+                  AppColors.gachaTheme,
                   false,
                 ),
                 _buildGameNavItem(
                   4,
                   Iconsax.profile_circle,
                   'Profile',
-                  Colors.orange,
+                  AppColors.accountTheme,
                   false,
                 ),
               ],
@@ -199,31 +164,7 @@ class HomeView extends GetView<HomeController> {
             horizontal: isMobile ? 1.w : 4.w,
             vertical: isMobile ? 6.h : 8.h,
           ),
-          decoration: BoxDecoration(
-            gradient: isSelected
-                ? LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      themeColor.withOpacity(0.2),
-                      themeColor.withOpacity(0.1),
-                    ],
-                  )
-                : null,
-            borderRadius: BorderRadius.circular(12.r),
-            border: isSelected
-                ? Border.all(color: themeColor.withOpacity(0.5), width: 1.5)
-                : null,
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: themeColor.withOpacity(0.3),
-                      blurRadius: 8.r,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
+          decoration: AppDecorations.containerWithThemeColor(themeColor, isSelected: isSelected),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -244,23 +185,22 @@ class HomeView extends GetView<HomeController> {
                       : (isSelected ? 22.r : 20.r),
                   color: isSelected
                       ? themeColor
-                      : Colors.grey[400],
+                      : AppColors.textTertiary,
                 ),
               ),
               SizedBox(height: 2.h),
               Flexible(
                 child: Text(
                   label,
-                  style: TextStyle(
-                    fontSize: isMobile
-                        ? (isSelected ? 8.sp : 7.sp)
-                        : (isSelected ? 10.sp : 9.sp),
-                    color: isSelected
-                        ? themeColor
-                        : Colors.grey[400],
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    letterSpacing: 0.2,
-                  ),
+                  style: isSelected
+                    ? AppTextStyles.withSize(
+                        AppTextStyles.withColor(AppTextStyles.navLabelSelected, themeColor),
+                        isMobile ? 8 : 10,
+                      )
+                    : AppTextStyles.withSize(
+                        AppTextStyles.withColor(AppTextStyles.navLabel, AppColors.textTertiary),
+                        isMobile ? 7 : 9,
+                      ),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -273,7 +213,7 @@ class HomeView extends GetView<HomeController> {
                   width: 20.w,
                   decoration: BoxDecoration(
                     color: themeColor,
-                    borderRadius: BorderRadius.circular(1.r),
+                    borderRadius: AppDecorations.radiusXS,
                   ),
                 ),
             ],

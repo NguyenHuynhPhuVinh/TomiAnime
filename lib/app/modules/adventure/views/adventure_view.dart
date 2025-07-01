@@ -3,6 +3,9 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/adventure_controller.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
+import '../../../theme/app_decorations.dart';
 
 class AdventureView extends GetView<AdventureController> {
   const AdventureView({Key? key}) : super(key: key);
@@ -16,39 +19,23 @@ class AdventureView extends GetView<AdventureController> {
           children: [
             Icon(
               Iconsax.map,
-              color: Colors.green,
+              color: AppColors.adventureTheme,
               size: 24.r,
             ),
             SizedBox(width: 8.w),
-            const Text('Adventure Quest'),
+            Text('Adventure Quest', style: AppTextStyles.h5),
           ],
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.green.withOpacity(0.1),
-                Colors.teal.withOpacity(0.1),
-              ],
-            ),
-          ),
+          decoration: AppDecorations.appBarWithThemeColor(AppColors.adventureTheme),
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1A1A2E),
-              Color(0xFF16213E),
-            ],
-          ),
+        decoration: BoxDecoration(
+          gradient: AppDecorations.backgroundGradient,
         ),
         child: Center(
           child: Column(
@@ -57,40 +44,34 @@ class AdventureView extends GetView<AdventureController> {
               Container(
                 padding: EdgeInsets.all(20.r),
                 decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: [
-                      Colors.green.withOpacity(0.2),
-                      Colors.green.withOpacity(0.05),
-                    ],
-                  ),
+                  gradient: AppDecorations.radialGradientWithColor(AppColors.adventureTheme),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Iconsax.map,
                   size: 80.r,
-                  color: Colors.green,
+                  color: AppColors.adventureTheme,
                 ),
               ),
               SizedBox(height: 24.h),
               Text(
                 'Adventure Quest',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                style: AppTextStyles.h3.copyWith(
+                  color: AppColors.adventureTheme,
                 ),
               ),
               SizedBox(height: 12.h),
               Text(
                 'Khám phá thế giới bí ẩn',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: AppColors.textSecondary,
                 ),
               ),
               SizedBox(height: 8.h),
               Text(
                 'Đang phát triển...',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.green.withOpacity(0.7),
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.adventureTheme.withOpacity(0.7),
                   fontStyle: FontStyle.italic,
                 ),
               ),

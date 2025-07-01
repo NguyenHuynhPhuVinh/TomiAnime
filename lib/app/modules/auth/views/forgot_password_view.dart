@@ -5,6 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../controllers/forgot_password_controller.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
+import '../../../theme/app_decorations.dart';
 
 class ForgotPasswordView extends GetView<ForgotPasswordController> {
   const ForgotPasswordView({super.key});
@@ -12,14 +15,14 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E27),
+      backgroundColor: AppColors.backgroundPrimary,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Iconsax.arrow_left,
-            color: Colors.white,
+            color: AppColors.textPrimary,
             size: 24.sp,
           ),
           onPressed: controller.goToLogin,
@@ -53,27 +56,19 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
           width: 80.w,
           height: 80.w,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20.r),
+            gradient: AppDecorations.primaryGradient,
+            borderRadius: AppDecorations.radiusXL,
           ),
           child: Icon(
             Iconsax.key,
             size: 40.sp,
-            color: Colors.white,
+            color: AppColors.textPrimary,
           ),
         ),
         SizedBox(height: 24.h),
         Text(
           'Quên mật khẩu?',
-          style: TextStyle(
-            fontSize: 32.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: AppTextStyles.appTitle,
         ),
       ],
     );
@@ -85,9 +80,8 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
         Text(
           'Đừng lo lắng! Chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu đến email của bạn.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 16.sp,
-            color: Colors.grey[400],
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.textSecondary,
             height: 1.5,
           ),
         ),
@@ -95,9 +89,8 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
         Text(
           'Vui lòng nhập địa chỉ email đã đăng ký:',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.grey[500],
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textTertiary,
           ),
         ),
       ],
@@ -119,22 +112,18 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
 
   Widget _buildEmailField() {
     return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1F3A),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: const Color(0xFF2D3561)),
-      ),
+      decoration: AppDecorations.inputContainer,
       child: TextFormField(
         controller: controller.emailController,
         validator: controller.validateEmail,
         keyboardType: TextInputType.emailAddress,
-        style: TextStyle(color: Colors.white, fontSize: 16.sp),
+        style: AppTextStyles.bodyLarge,
         decoration: InputDecoration(
           hintText: 'Nhập email của bạn',
-          hintStyle: TextStyle(color: Colors.grey[500]),
+          hintStyle: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textTertiary),
           prefixIcon: Icon(
             Iconsax.sms,
-            color: Colors.grey[500],
+            color: AppColors.textTertiary,
             size: 20.sp,
           ),
           border: InputBorder.none,
@@ -157,34 +146,31 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
               width: double.infinity,
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
-                color: const Color(0xFF00D4AA).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12.r),
+                color: AppColors.success.withOpacity(0.1),
+                borderRadius: AppDecorations.radiusM,
                 border: Border.all(
-                  color: const Color(0xFF00D4AA).withOpacity(0.3),
+                  color: AppColors.success.withOpacity(0.3),
                 ),
               ),
               child: Column(
                 children: [
                   Icon(
                     Icons.mark_email_read,
-                    color: const Color(0xFF00D4AA),
+                    color: AppColors.success,
                     size: 32.sp,
                   ),
                   SizedBox(height: 8.h),
                   Text(
                     'Email đã được gửi!',
-                    style: TextStyle(
-                      color: const Color(0xFF00D4AA),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
+                    style: AppTextStyles.buttonMedium.copyWith(
+                      color: AppColors.success,
                     ),
                   ),
                   SizedBox(height: 4.h),
                   Text(
                     'Vui lòng kiểm tra hộp thư của bạn',
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 14.sp,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ],
@@ -199,12 +185,9 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
               text: controller.isLoading.value ? 'Đang gửi lại...' : 'Gửi lại email',
               size: GFSize.LARGE,
               fullWidthButton: true,
-              color: Colors.grey[600] ?? Colors.grey,
+              color: AppColors.buttonSecondary,
               shape: GFButtonShape.pills,
-              textStyle: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-              ),
+              textStyle: AppTextStyles.buttonLarge,
             ),
           ],
         );
@@ -217,12 +200,9 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
         text: controller.isLoading.value ? 'Đang gửi...' : 'Gửi email đặt lại',
         size: GFSize.LARGE,
         fullWidthButton: true,
-        color: const Color(0xFF6C5CE7),
+        color: AppColors.buttonPrimary,
         shape: GFButtonShape.pills,
-        textStyle: TextStyle(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: AppTextStyles.buttonLarge,
       );
     });
   }
@@ -233,20 +213,13 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
       children: [
         Text(
           'Nhớ mật khẩu rồi? ',
-          style: TextStyle(
-            color: Colors.grey[400],
-            fontSize: 14.sp,
-          ),
+          style: AppTextStyles.withColor(AppTextStyles.bodyMedium, AppColors.textSecondary),
         ),
         GestureDetector(
           onTap: controller.goToLogin,
           child: Text(
             'Đăng nhập',
-            style: TextStyle(
-              color: const Color(0xFF6C5CE7),
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTextStyles.withColor(AppTextStyles.buttonMedium, AppColors.primary),
           ),
         ),
       ],

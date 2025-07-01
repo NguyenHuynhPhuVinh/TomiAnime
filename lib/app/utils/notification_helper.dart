@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_decorations.dart';
 
 class NotificationHelper {
-  // Màu sắc cho theme dark
-  static const Color _successColor = Color(0xFF00D4AA);
-  static const Color _errorColor = Color(0xFFFF6B6B);
-  static const Color _warningColor = Color(0xFFFFB800);
-  static const Color _infoColor = Color(0xFF6C5CE7);
-  static const Color _backgroundColor = Color(0xFF1A1D29);
-  static const Color _textColor = Colors.white;
+  // Sử dụng màu sắc từ AppColors
+  static const Color _successColor = AppColors.success;
+  static const Color _errorColor = AppColors.error;
+  static const Color _warningColor = AppColors.warning;
+  static const Color _infoColor = AppColors.info;
+  static const Color _backgroundColor = AppColors.backgroundSecondary;
+  static const Color _textColor = AppColors.textPrimary;
 
   /// Hiển thị thông báo thành công
   static void showSuccess({
@@ -23,16 +26,13 @@ class NotificationHelper {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: _backgroundColor,
       colorText: _textColor,
-      borderRadius: 16.r,
+      borderRadius: AppDecorations.radiusL.topLeft.x,
       margin: EdgeInsets.all(16.w),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       duration: duration,
       icon: Container(
         padding: EdgeInsets.all(8.w),
-        decoration: BoxDecoration(
-          color: _successColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        decoration: AppDecorations.iconContainerWithColor(_successColor),
         child: Icon(
           Icons.check_circle,
           color: _successColor,
@@ -43,18 +43,11 @@ class NotificationHelper {
       borderWidth: 1,
       titleText: Text(
         title,
-        style: TextStyle(
-          color: _textColor,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-        ),
+        style: AppTextStyles.withColor(AppTextStyles.buttonMedium, _textColor),
       ),
       messageText: Text(
         message,
-        style: TextStyle(
-          color: _textColor.withOpacity(0.8),
-          fontSize: 14.sp,
-        ),
+        style: AppTextStyles.withOpacity(AppTextStyles.bodyMedium, 0.8),
       ),
     );
   }
@@ -71,16 +64,13 @@ class NotificationHelper {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: _backgroundColor,
       colorText: _textColor,
-      borderRadius: 16.r,
+      borderRadius: AppDecorations.radiusL.topLeft.x,
       margin: EdgeInsets.all(16.w),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       duration: duration,
       icon: Container(
         padding: EdgeInsets.all(8.w),
-        decoration: BoxDecoration(
-          color: _errorColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        decoration: AppDecorations.iconContainerWithColor(_errorColor),
         child: Icon(
           Icons.error,
           color: _errorColor,
@@ -91,18 +81,11 @@ class NotificationHelper {
       borderWidth: 1,
       titleText: Text(
         title,
-        style: TextStyle(
-          color: _textColor,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-        ),
+        style: AppTextStyles.withColor(AppTextStyles.buttonMedium, _textColor),
       ),
       messageText: Text(
         message,
-        style: TextStyle(
-          color: _textColor.withOpacity(0.8),
-          fontSize: 14.sp,
-        ),
+        style: AppTextStyles.withOpacity(AppTextStyles.bodyMedium, 0.8),
       ),
     );
   }
@@ -119,16 +102,13 @@ class NotificationHelper {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: _backgroundColor,
       colorText: _textColor,
-      borderRadius: 16.r,
+      borderRadius: AppDecorations.radiusL.topLeft.x,
       margin: EdgeInsets.all(16.w),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       duration: duration,
       icon: Container(
         padding: EdgeInsets.all(8.w),
-        decoration: BoxDecoration(
-          color: _warningColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        decoration: AppDecorations.iconContainerWithColor(_warningColor),
         child: Icon(
           Icons.warning,
           color: _warningColor,
@@ -139,18 +119,11 @@ class NotificationHelper {
       borderWidth: 1,
       titleText: Text(
         title,
-        style: TextStyle(
-          color: _textColor,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-        ),
+        style: AppTextStyles.withColor(AppTextStyles.buttonMedium, _textColor),
       ),
       messageText: Text(
         message,
-        style: TextStyle(
-          color: _textColor.withOpacity(0.8),
-          fontSize: 14.sp,
-        ),
+        style: AppTextStyles.withOpacity(AppTextStyles.bodyMedium, 0.8),
       ),
     );
   }
@@ -167,16 +140,13 @@ class NotificationHelper {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: _backgroundColor,
       colorText: _textColor,
-      borderRadius: 16.r,
+      borderRadius: AppDecorations.radiusL.topLeft.x,
       margin: EdgeInsets.all(16.w),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       duration: duration,
       icon: Container(
         padding: EdgeInsets.all(8.w),
-        decoration: BoxDecoration(
-          color: _infoColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        decoration: AppDecorations.iconContainerWithColor(_infoColor),
         child: Icon(
           Icons.info,
           color: _infoColor,
@@ -187,18 +157,11 @@ class NotificationHelper {
       borderWidth: 1,
       titleText: Text(
         title,
-        style: TextStyle(
-          color: _textColor,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-        ),
+        style: AppTextStyles.withColor(AppTextStyles.buttonMedium, _textColor),
       ),
       messageText: Text(
         message,
-        style: TextStyle(
-          color: _textColor.withOpacity(0.8),
-          fontSize: 14.sp,
-        ),
+        style: AppTextStyles.withOpacity(AppTextStyles.bodyMedium, 0.8),
       ),
     );
   }
@@ -213,7 +176,7 @@ class NotificationHelper {
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: _backgroundColor,
       colorText: _textColor,
-      borderRadius: 12.r,
+      borderRadius: AppDecorations.radiusL.topLeft.x,
       margin: EdgeInsets.all(16.w),
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       duration: const Duration(seconds: 10), // Thời gian dài hơn cho loading
@@ -222,18 +185,11 @@ class NotificationHelper {
       progressIndicatorValueColor: AlwaysStoppedAnimation<Color>(_infoColor),
       titleText: Text(
         'Đang xử lý',
-        style: TextStyle(
-          color: _textColor,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-        ),
+        style: AppTextStyles.withColor(AppTextStyles.buttonMedium, _textColor),
       ),
       messageText: Text(
         message,
-        style: TextStyle(
-          color: _textColor.withOpacity(0.8),
-          fontSize: 14.sp,
-        ),
+        style: AppTextStyles.withOpacity(AppTextStyles.bodyMedium, 0.8),
       ),
     );
   }
