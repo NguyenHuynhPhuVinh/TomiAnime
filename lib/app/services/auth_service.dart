@@ -24,9 +24,27 @@ class AuthService extends GetxService {
   
   // Check if user is logged in
   bool get isLoggedIn => user.value != null;
-  
+
   // Get current user
   User? get currentUser => user.value;
+
+  // Check auth state (for splash screen)
+  Future<void> checkAuthState() async {
+    try {
+      // Reload current user to get fresh auth state
+      await _auth.currentUser?.reload();
+
+      // Update user observable
+      user.value = _auth.currentUser;
+
+      print('🔐 Auth state checked: ${isLoggedIn ? 'Logged in' : 'Not logged in'}');
+      if (isLoggedIn) {
+        print('👤 Current user: ${currentUser?.email}');
+      }
+    } catch (e) {
+      print('❌ Error checking auth state: $e');
+    }
+  }
   
   // Sign in with email and password
   Future<UserCredential?> signInWithEmailAndPassword({

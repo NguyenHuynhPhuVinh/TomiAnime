@@ -173,3 +173,59 @@ class Pagination {
     );
   }
 }
+
+// Model cho anime streaming data
+class AnimeStreamingModel {
+  final int malId;
+  final String nguoncUrl;
+
+  AnimeStreamingModel({
+    required this.malId,
+    required this.nguoncUrl,
+  });
+
+  factory AnimeStreamingModel.fromJson(Map<String, dynamic> json) {
+    return AnimeStreamingModel(
+      malId: json['mal_id'] ?? 0,
+      nguoncUrl: json['nguonc_url'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'mal_id': malId,
+      'nguonc_url': nguoncUrl,
+    };
+  }
+}
+
+// Model cho streaming sync data
+class StreamingSyncData {
+  final String version;
+  final DateTime lastUpdate;
+  final List<AnimeStreamingModel> animes;
+
+  StreamingSyncData({
+    required this.version,
+    required this.lastUpdate,
+    required this.animes,
+  });
+
+  factory StreamingSyncData.fromJson(Map<String, dynamic> json) {
+    return StreamingSyncData(
+      version: json['version'] ?? '1.0.0',
+      lastUpdate: DateTime.tryParse(json['last_update'] ?? '') ?? DateTime.now(),
+      animes: (json['animes'] as List?)
+          ?.map((e) => AnimeStreamingModel.fromJson(e))
+          .toList() ?? [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'version': version,
+      'last_update': lastUpdate.toIso8601String(),
+      'animes': animes.map((e) => e.toJson()).toList(),
+    };
+  }
+}

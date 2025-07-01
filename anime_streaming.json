@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "last_update": "2025-01-01T00:00:00Z",
+  "animes": [
+    {
+      "mal_id": 60658,
+      "nguonc_url": "https://phim.nguonc.com/api/film/hibi-wa-sugiredo-meshi-umashi"
+    }
+  ]
+}

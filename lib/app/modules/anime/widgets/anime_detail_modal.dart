@@ -6,10 +6,31 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../models/anime_model.dart';
+import '../../../services/streaming_data_service.dart';
 import '../utils/anime_utils.dart';
 
 class AnimeDetailModal {
   static void show(AnimeModel anime) {
+    // Debug log khi mở anime detail
+    print('🎬 Opening anime detail:');
+    print('   📋 MAL ID: ${anime.malId}');
+    print('   🏷️  Title: ${anime.title}');
+    print('   🌐 English: ${anime.titleEnglish ?? 'N/A'}');
+    print('   🇯🇵 Japanese: ${anime.titleJapanese ?? 'N/A'}');
+    print('   📺 Type: ${anime.type}');
+    print('   ⭐ Score: ${anime.score ?? 'N/A'}');
+
+    // Kiểm tra streaming availability
+    final streamingService = StreamingDataService();
+    final isAvailable = streamingService.isAnimeAvailable(anime.malId);
+    final nguoncUrl = streamingService.getNguoncUrl(anime.malId);
+
+    print('   🎥 Streaming available: $isAvailable');
+    if (isAvailable && nguoncUrl != null) {
+      print('   🔗 Nguonc URL: $nguoncUrl');
+    }
+    print('   ─────────────────────────────────');
+
     showModalBottomSheet(
       context: Get.context!,
       backgroundColor: Colors.transparent,
@@ -21,17 +42,38 @@ class AnimeDetailModal {
         initialChildSize: 0.7,
         maxChildSize: 0.9,
         minChildSize: 0.5,
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-          ),
-          padding: EdgeInsets.all(20.r),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+        builder: (context, scrollController) => _AnimeDetailContent(
+          anime: anime,
+          scrollController: scrollController,
+        ),
+      ),
+    );
+  }
+}
+
+class _AnimeDetailContent extends StatelessWidget {
+  final AnimeModel anime;
+  final ScrollController scrollController;
+
+  const _AnimeDetailContent({
+    Key? key,
+    required this.anime,
+    required this.scrollController,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      padding: EdgeInsets.all(20.r),
+      child: SingleChildScrollView(
+        controller: scrollController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
                 // Handle bar
                 Center(
                   child: Container(
@@ -189,12 +231,98 @@ class AnimeDetailModal {
                     ),
                   ),
                 ],
+                // Nút xem anime
+                _buildWatchButton(),
                 SizedBox(height: 20.h),
               ],
             ),
           ),
+        );
+  }
+
+  /// Widget nút xem anime
+  Widget _buildWatchButton() {
+    final streamingService = StreamingDataService();
+    final isAvailable = streamingService.isAnimeAvailable(anime.malId);
+
+    // Debug log cho watch button
+    print('🔍 Checking watch button for: ${anime.title} (MAL ID: ${anime.malId})');
+    print('   📊 Available for streaming: $isAvailable');
+
+    if (!isAvailable) {
+      print('   ❌ Watch button hidden - anime not available');
+      return const SizedBox.shrink(); // Không hiển thị nút nếu không có
+    }
+
+    print('   ✅ Watch button shown - anime available for streaming');
+
+    return Container(
+      margin: EdgeInsets.only(top: 20.h),
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _onWatchPressed,
+        icon: Icon(
+          Iconsax.play,
+          color: Colors.white,
+          size: 20.r,
+        ),
+        label: Text(
+          'Xem Anime',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.animeTheme,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          elevation: 2,
         ),
       ),
     );
+  }
+
+  /// Xử lý khi nhấn nút xem
+  void _onWatchPressed() {
+    final streamingService = StreamingDataService();
+    final nguoncUrl = streamingService.getNguoncUrl(anime.malId);
+
+    if (nguoncUrl != null) {
+      // Tạm thời chỉ hiển thị thông báo
+      Get.snackbar(
+        'Xem Anime',
+        'Sẽ mở: ${anime.title}\nURL: $nguoncUrl',
+        backgroundColor: AppColors.animeTheme,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: EdgeInsets.all(16.r),
+        borderRadius: 12.r,
+        icon: Icon(
+          Iconsax.play,
+          color: Colors.white,
+          size: 24.r,
+        ),
+      );
+
+      // Log để debug
+      print('Watch anime: ${anime.title} (MAL ID: ${anime.malId})');
+      print('Nguonc URL: $nguoncUrl');
+    } else {
+      Get.snackbar(
+        'Lỗi',
+        'Không tìm thấy link xem cho anime này',
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: EdgeInsets.all(16.r),
+        borderRadius: 12.r,
+      );
+    }
   }
 }

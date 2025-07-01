@@ -1,31 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-import 'firebase_options.dart';
 import 'app/routes/app_pages.dart';
-import 'app/services/auth_service.dart';
-import 'app/services/auth_guard.dart';
-import 'app/services/firestore_service.dart';
 import 'app/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // Initialize Hive
-  await Hive.initFlutter();
-
-  // Initialize Services
-  Get.put(FirestoreService());
-  Get.put(AuthService());
-
+  // Chỉ khởi tạo cơ bản - phần còn lại sẽ được thực hiện trong splash screen
   runApp(const TomiAnimeApp());
 }
 
@@ -43,7 +26,7 @@ class TomiAnimeApp extends StatelessWidget {
           title: 'TomiAnime',
           theme: AppTheme.themeData,
           themeMode: ThemeMode.dark,
-          initialRoute: AuthGuard.getInitialRoute(),
+          initialRoute: AppPages.INITIAL,
           getPages: AppPages.routes,
           debugShowCheckedModeBanner: false,
         );
