@@ -94,9 +94,10 @@ class VideoPlayerController extends GetxController {
     }
   }
 
-  /// Quay lại màn hình trước
+  /// Quay lại màn hình trước và reload trạng thái
   void goBack() {
-    Get.back();
+    // Truyền signal để reload trạng thái watch screen
+    Get.back(result: {'shouldReload': true});
   }
 
   /// Lấy title cho app bar

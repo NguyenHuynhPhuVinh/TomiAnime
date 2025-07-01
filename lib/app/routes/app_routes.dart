@@ -12,6 +12,7 @@ abstract class Routes {
   static const ANIME = _Paths.ANIME;
   static const ANIME_SEARCH = _Paths.ANIME_SEARCH;
   static const ANIME_WATCH = _Paths.ANIME_WATCH;
+  static const ANIME_LIST = _Paths.ANIME_LIST;
   static const VIDEO_PLAYER = _Paths.VIDEO_PLAYER;
   static const CARDS = _Paths.CARDS;
   static const ADVENTURE = _Paths.ADVENTURE;
@@ -30,6 +31,7 @@ abstract class _Paths {
   static const ANIME = '/anime';
   static const ANIME_SEARCH = '/anime-search';
   static const ANIME_WATCH = '/anime-watch';
+  static const ANIME_LIST = '/anime-list';
   static const VIDEO_PLAYER = '/video-player';
   static const CARDS = '/cards';
   static const ADVENTURE = '/adventure';

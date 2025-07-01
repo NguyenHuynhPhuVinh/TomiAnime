@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';
+import '../models/anime_watch_status_model.dart';
 
 class FirestoreService extends GetxService {
   static FirestoreService get instance => Get.find();
@@ -75,4 +76,182 @@ class FirestoreService extends GetxService {
   }
 
 
+
+  // ==================== ANIME WATCH STATUS METHODS ====================
+
+  /// Lưu hoặc cập nhật trạng thái xem anime
+  Future<bool> saveAnimeWatchStatus(String uid, AnimeWatchStatusModel watchStatus) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('animeWatchStatus')
+          .doc(watchStatus.malId.toString())
+          .set(watchStatus.toFirestore(), SetOptions(merge: true));
+
+      print('✅ Anime watch status saved: ${watchStatus.title} (Status: ${watchStatus.status.displayName})');
+      return true;
+    } catch (e) {
+      print('❌ Error saving anime watch status: $e');
+      return false;
+    }
+  }
+
+  /// Lấy trạng thái xem anime
+  Future<AnimeWatchStatusModel?> getAnimeWatchStatus(String uid, int malId) async {
+    try {
+      final doc = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('animeWatchStatus')
+          .doc(malId.toString())
+          .get();
+
+      if (doc.exists) {
+        return AnimeWatchStatusModel.fromFirestore(doc);
+      }
+      return null;
+    } catch (e) {
+      print('❌ Error getting anime watch status: $e');
+      return null;
+    }
+  }
+
+  /// Đánh dấu tập anime đã xem
+  Future<bool> markEpisodeWatched(String uid, int malId, int episodeIndex, {int? totalEpisodes}) async {
+    try {
+      final docRef = _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('animeWatchStatus')
+          .doc(malId.toString());
+
+      final doc = await docRef.get();
+
+      if (!doc.exists) {
+        print('❌ Anime watch status not found for MAL ID: $malId');
+        return false;
+      }
+
+      final currentStatus = AnimeWatchStatusModel.fromFirestore(doc);
+      final updatedWatchedEpisodes = List<int>.from(currentStatus.watchedEpisodes);
+
+      // Thêm tập vào danh sách đã xem nếu chưa có
+      if (!updatedWatchedEpisodes.contains(episodeIndex)) {
+        updatedWatchedEpisodes.add(episodeIndex);
+        updatedWatchedEpisodes.sort(); // Sắp xếp theo thứ tự
+      }
+
+      // Xác định trạng thái mới
+      AnimeWatchStatus newStatus;
+      final totalEps = totalEpisodes ?? currentStatus.totalEpisodes ?? 0;
+
+      if (totalEps > 0 && updatedWatchedEpisodes.length >= totalEps) {
+        newStatus = AnimeWatchStatus.completed;
+      } else if (updatedWatchedEpisodes.isNotEmpty) {
+        newStatus = AnimeWatchStatus.watching;
+      } else {
+        newStatus = AnimeWatchStatus.saved;
+      }
+
+      // Cập nhật document
+      await docRef.update({
+        'status': newStatus.value,
+        'currentEpisode': episodeIndex,
+        'watchedEpisodes': updatedWatchedEpisodes,
+        'lastWatchedAt': FieldValue.serverTimestamp(),
+        'totalEpisodes': totalEps > 0 ? totalEps : currentStatus.totalEpisodes,
+      });
+
+      print('✅ Episode $episodeIndex marked as watched for ${currentStatus.title}');
+      print('   📊 Status: ${newStatus.displayName}');
+      print('   📺 Progress: ${updatedWatchedEpisodes.length}/$totalEps episodes');
+
+      return true;
+    } catch (e) {
+      print('❌ Error marking episode as watched: $e');
+      return false;
+    }
+  }
+
+  /// Lấy danh sách anime theo trạng thái
+  Future<List<AnimeWatchStatusModel>> getAnimesByStatus(String uid, AnimeWatchStatus status) async {
+    try {
+      // Lấy tất cả anime trước, sau đó filter và sort trong memory để tránh cần index
+      final querySnapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('animeWatchStatus')
+          .get();
+
+      final animes = <AnimeWatchStatusModel>[];
+      for (final doc in querySnapshot.docs) {
+        try {
+          final anime = AnimeWatchStatusModel.fromFirestore(doc);
+          // Filter theo status
+          if (anime.status == status) {
+            animes.add(anime);
+          }
+        } catch (e) {
+          print('❌ Error parsing anime watch status: $e');
+        }
+      }
+
+      // Sort theo lastWatchedAt descending
+      animes.sort((a, b) => b.lastWatchedAt.compareTo(a.lastWatchedAt));
+
+      print('✅ Retrieved ${animes.length} animes with status: ${status.displayName}');
+      return animes;
+    } catch (e) {
+      print('❌ Error getting animes by status: $e');
+      return [];
+    }
+  }
+
+  /// Lấy tất cả anime đã lưu/xem
+  Future<List<AnimeWatchStatusModel>> getAllWatchedAnimes(String uid) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('animeWatchStatus')
+          .get();
+
+      final animes = <AnimeWatchStatusModel>[];
+      for (final doc in querySnapshot.docs) {
+        try {
+          animes.add(AnimeWatchStatusModel.fromFirestore(doc));
+        } catch (e) {
+          print('❌ Error parsing anime watch status: $e');
+        }
+      }
+
+      // Sort theo lastWatchedAt descending
+      animes.sort((a, b) => b.lastWatchedAt.compareTo(a.lastWatchedAt));
+
+      print('✅ Retrieved ${animes.length} total watched animes');
+      return animes;
+    } catch (e) {
+      print('❌ Error getting all watched animes: $e');
+      return [];
+    }
+  }
+
+  /// Xóa anime khỏi danh sách xem
+  Future<bool> removeAnimeWatchStatus(String uid, int malId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('animeWatchStatus')
+          .doc(malId.toString())
+          .delete();
+
+      print('✅ Anime watch status removed: MAL ID $malId');
+      return true;
+    } catch (e) {
+      print('❌ Error removing anime watch status: $e');
+      return false;
+    }
+  }
 }

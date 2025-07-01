@@ -16,6 +16,8 @@ import '../modules/anime/bindings/anime_search_binding.dart';
 import '../modules/anime/views/anime_search_view.dart';
 import '../modules/anime_watch/bindings/anime_watch_binding.dart';
 import '../modules/anime_watch/views/anime_watch_view.dart';
+import '../modules/anime_list/bindings/anime_list_binding.dart';
+import '../modules/anime_list/views/anime_list_view.dart';
 import '../modules/video_player/bindings/video_player_binding.dart';
 import '../modules/video_player/views/video_player_view.dart';
 import '../modules/cards/bindings/cards_binding.dart';
@@ -77,6 +79,12 @@ class AppPages {
       name: _Paths.ANIME_WATCH,
       page: () => const AnimeWatchView(),
       binding: AnimeWatchBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.ANIME_LIST,
+      page: () => const AnimeListView(),
+      binding: AnimeListBinding(),
       middlewares: [AuthMiddleware()],
     ),
     GetPage(

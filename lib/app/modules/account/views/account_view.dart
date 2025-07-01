@@ -156,15 +156,9 @@ class AccountView extends GetView<AccountController> {
         SizedBox(height: 12.h),
         _buildMenuItem(
           icon: Iconsax.heart,
-          title: 'Yêu thích',
-          subtitle: 'Anime đã lưu',
-          onTap: () {
-            Get.snackbar(
-              'Thông báo',
-              'Tính năng đang phát triển',
-              snackPosition: SnackPosition.BOTTOM,
-            );
-          },
+          title: 'Anime của tôi',
+          subtitle: 'Quản lý danh sách anime',
+          onTap: () => Get.toNamed('/anime-list', arguments: {'status': 'saved'}),
         ),
         SizedBox(height: 12.h),
         _buildMenuItem(

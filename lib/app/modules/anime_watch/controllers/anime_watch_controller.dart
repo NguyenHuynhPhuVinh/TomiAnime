@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import '../../../models/nguonc_model.dart';
 import '../../../services/nguonc_api_service.dart';
+import '../../../services/firestore_service.dart';
+import '../../../services/auth_service.dart';
 
 class AnimeWatchController extends GetxController {
   final NguoncApiService _apiService = NguoncApiService();
@@ -76,17 +78,44 @@ class AnimeWatchController extends GetxController {
     }
   }
 
-  /// Chọn tập phim
+  /// Chọn tập phim và đánh dấu đã xem
   void selectEpisode(int index) {
-    if (movie.value != null && 
-        movie.value!.episodes.isNotEmpty && 
-        index >= 0 && 
+    if (movie.value != null &&
+        movie.value!.episodes.isNotEmpty &&
+        index >= 0 &&
         index < movie.value!.episodes.first.items.length) {
       selectedEpisodeIndex.value = index;
-      
+
       final episode = movie.value!.episodes.first.items[index];
       print('📺 Selected episode: ${episode.name}');
       print('🔗 Embed URL: ${episode.embed}');
+
+      // Đánh dấu tập đã xem
+      _markEpisodeWatched(index);
+    }
+  }
+
+  /// Đánh dấu tập đã xem trong Firestore
+  Future<void> _markEpisodeWatched(int episodeIndex) async {
+    try {
+      final authService = AuthService.instance;
+      final user = authService.currentUser;
+
+      if (user != null && movie.value != null) {
+        final firestoreService = FirestoreService.instance;
+        final totalEpisodes = movie.value!.episodes.first.items.length;
+
+        await firestoreService.markEpisodeWatched(
+          user.uid,
+          malId,
+          episodeIndex,
+          totalEpisodes: totalEpisodes,
+        );
+
+        print('✅ Episode $episodeIndex marked as watched for anime $malId');
+      }
+    } catch (e) {
+      print('❌ Error marking episode as watched: $e');
     }
   }
 
