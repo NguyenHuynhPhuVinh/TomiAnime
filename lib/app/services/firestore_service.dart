@@ -144,9 +144,10 @@ class FirestoreService extends GetxService {
 
       // Xác định trạng thái mới
       AnimeWatchStatus newStatus;
-      final totalEps = totalEpisodes ?? currentStatus.totalEpisodes ?? 0;
+      // Chỉ sử dụng totalEpisodes từ currentStatus (data detail gốc), không dùng từ nguonc API
+      final totalEps = currentStatus.totalEpisodes;
 
-      if (totalEps > 0 && updatedWatchedEpisodes.length >= totalEps) {
+      if (totalEps != null && totalEps > 0 && updatedWatchedEpisodes.length >= totalEps) {
         newStatus = AnimeWatchStatus.completed;
       } else if (updatedWatchedEpisodes.isNotEmpty) {
         newStatus = AnimeWatchStatus.watching;
@@ -154,18 +155,21 @@ class FirestoreService extends GetxService {
         newStatus = AnimeWatchStatus.saved;
       }
 
-      // Cập nhật document
+      // Cập nhật document - KHÔNG cập nhật totalEpisodes, giữ nguyên từ data detail
       await docRef.update({
         'status': newStatus.value,
         'currentEpisode': episodeIndex,
         'watchedEpisodes': updatedWatchedEpisodes,
         'lastWatchedAt': FieldValue.serverTimestamp(),
-        'totalEpisodes': totalEps > 0 ? totalEps : currentStatus.totalEpisodes,
+        // Không cập nhật totalEpisodes để giữ nguyên data từ detail
       });
 
       print('✅ Episode $episodeIndex marked as watched for ${currentStatus.title}');
       print('   📊 Status: ${newStatus.displayName}');
-      print('   📺 Progress: ${updatedWatchedEpisodes.length}/$totalEps episodes');
+      final progressText = totalEps != null && totalEps > 0
+          ? '${updatedWatchedEpisodes.length}/$totalEps episodes'
+          : '${updatedWatchedEpisodes.length}/? episodes';
+      print('   📺 Progress: $progressText');
 
       return true;
     } catch (e) {

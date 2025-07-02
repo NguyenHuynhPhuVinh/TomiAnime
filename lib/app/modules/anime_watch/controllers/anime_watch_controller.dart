@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import '../../../models/nguonc_model.dart';
+import '../../../models/anime_watch_status_model.dart';
+import '../../../models/anime_model.dart';
 import '../../../services/nguonc_api_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/auth_service.dart';
@@ -17,24 +19,27 @@ class AnimeWatchController extends GetxController {
   late String nguoncUrl;
   late String animeTitle;
   late int malId;
+  late AnimeModel animeData; // Thêm data anime đầy đủ
 
   @override
   void onInit() {
     super.onInit();
-    
+
     // Lấy parameters từ Get.arguments
     final arguments = Get.arguments as Map<String, dynamic>?;
-    
+
     if (arguments != null) {
       nguoncUrl = arguments['nguoncUrl'] ?? '';
       animeTitle = arguments['animeTitle'] ?? '';
       malId = arguments['malId'] ?? 0;
-      
+      animeData = arguments['animeData'] as AnimeModel; // Lấy data anime đầy đủ
+
       print('🎬 AnimeWatchController initialized:');
       print('   📋 MAL ID: $malId');
       print('   🏷️  Title: $animeTitle');
       print('   🔗 Nguonc URL: $nguoncUrl');
-      
+      print('   📊 Anime data: ${animeData.title} (${animeData.type})');
+
       if (nguoncUrl.isNotEmpty) {
         loadMovieDetails();
       } else {
@@ -52,23 +57,27 @@ class AnimeWatchController extends GetxController {
     try {
       isLoading.value = true;
       error.value = '';
-      
+
       print('🔄 Loading movie details...');
-      
+
       final response = await _apiService.getMovieDetails(nguoncUrl);
-      
+
       if (response.status == 'success') {
         movie.value = response.movie;
-        
+
         print('✅ Movie loaded successfully:');
         print('   🎭 Name: ${response.movie.name}');
         print('   📺 Total episodes: ${response.movie.totalEpisodes}');
-        print('   🎥 Available episodes: ${response.movie.episodes.isNotEmpty ? response.movie.episodes.first.items.length : 0}');
-        
+        print(
+          '   🎥 Available episodes: ${response.movie.episodes.isNotEmpty ? response.movie.episodes.first.items.length : 0}',
+        );
+
         // Reset selected episode về đầu
         selectedEpisodeIndex.value = 0;
       } else {
-        throw Exception('API trả về status không thành công: ${response.status}');
+        throw Exception(
+          'API trả về status không thành công: ${response.status}',
+        );
       }
     } catch (e) {
       print('❌ Error loading movie details: $e');
@@ -103,13 +112,28 @@ class AnimeWatchController extends GetxController {
 
       if (user != null && movie.value != null) {
         final firestoreService = FirestoreService.instance;
-        final totalEpisodes = movie.value!.episodes.first.items.length;
 
+        // Kiểm tra xem anime đã có trong watch status chưa
+        final existingStatus = await firestoreService.getAnimeWatchStatus(
+          user.uid,
+          malId,
+        );
+
+        if (existingStatus == null) {
+          // Tạo watch status mới từ thông tin anime từ detail modal
+          final newWatchStatus = AnimeWatchStatusModel.fromAnimeModel(
+            animeData,
+          );
+
+          await firestoreService.saveAnimeWatchStatus(user.uid, newWatchStatus);
+          print('✅ Auto-created watch status for $animeTitle');
+        }
+
+        // Đánh dấu tập đã xem (không truyền totalEpisodes để giữ nguyên data từ detail)
         await firestoreService.markEpisodeWatched(
           user.uid,
           malId,
           episodeIndex,
-          totalEpisodes: totalEpisodes,
         );
 
         print('✅ Episode $episodeIndex marked as watched for anime $malId');
@@ -121,8 +145,8 @@ class AnimeWatchController extends GetxController {
 
   /// Lấy tập hiện tại được chọn
   NguoncEpisode? get currentEpisode {
-    if (movie.value != null && 
-        movie.value!.episodes.isNotEmpty && 
+    if (movie.value != null &&
+        movie.value!.episodes.isNotEmpty &&
         selectedEpisodeIndex.value < movie.value!.episodes.first.items.length) {
       return movie.value!.episodes.first.items[selectedEpisodeIndex.value];
     }

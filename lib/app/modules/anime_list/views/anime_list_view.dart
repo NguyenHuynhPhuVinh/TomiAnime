@@ -456,7 +456,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
           SizedBox(width: 6.w),
           Flexible(
             child: Text(
-              '${anime.watchedEpisodes.length}/${anime.totalEpisodes ?? '?'} tập',
+              anime.progressText,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
                 fontSize: 10.sp,

@@ -588,9 +588,6 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
     final nguoncUrl = streamingService.getNguoncUrl(widget.anime.malId);
 
     if (nguoncUrl != null) {
-      // Tự động tạo watch status nếu chưa có
-      await _ensureWatchStatusExists();
-
       // Log để debug
       print('🎬 Navigating to watch screen:');
       print('   📋 MAL ID: ${widget.anime.malId}');
@@ -600,13 +597,14 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
       // Đóng modal trước khi navigate
       Get.back();
 
-      // Navigate đến anime watch screen
+      // Navigate đến anime watch screen với đầy đủ thông tin anime
       Get.toNamed(
         '/anime-watch',
         arguments: {
           'nguoncUrl': nguoncUrl,
           'animeTitle': widget.anime.title,
           'malId': widget.anime.malId,
+          'animeData': widget.anime, // Truyền toàn bộ data anime
         },
       );
     } else {
@@ -618,20 +616,7 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
     }
   }
 
-  /// Đảm bảo watch status tồn tại trước khi xem
-  Future<void> _ensureWatchStatusExists() async {
-    if (watchStatus.value == null) {
-      final authService = AuthService.instance;
-      final user = authService.currentUser!;
-      final firestoreService = FirestoreService.instance;
 
-      final newWatchStatus = AnimeWatchStatusModel.fromAnimeModel(widget.anime);
-      await firestoreService.saveAnimeWatchStatus(user.uid, newWatchStatus);
-      watchStatus.value = newWatchStatus;
-
-      print('✅ Auto-created watch status for ${widget.anime.title}');
-    }
-  }
 
   /// Xử lý khi nhấn nút lưu anime
   Future<void> _onSavePressed() async {

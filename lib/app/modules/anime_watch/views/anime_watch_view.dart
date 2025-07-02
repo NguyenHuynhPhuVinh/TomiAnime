@@ -176,11 +176,12 @@ class AnimeWatchView extends GetView<AnimeWatchController> {
           }
 
           final watchStatus = snapshot.data!;
-          final totalEpisodes = controller.allEpisodes.length;
-          final watchedCount = watchStatus.watchedEpisodes.length;
-          final progress = totalEpisodes > 0
-              ? watchedCount / totalEpisodes
-              : 0.0;
+
+          // Sử dụng logic từ model để tính progress
+          final progress = watchStatus.watchProgress;
+          final hasKnownTotal =
+              watchStatus.totalEpisodes != null &&
+              watchStatus.totalEpisodes! > 0;
 
           return Container(
             padding: EdgeInsets.all(16.w),
@@ -212,7 +213,7 @@ class AnimeWatchView extends GetView<AnimeWatchController> {
                     ),
                     const Spacer(),
                     Text(
-                      '$watchedCount/$totalEpisodes tập',
+                      watchStatus.progressText,
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -234,7 +235,9 @@ class AnimeWatchView extends GetView<AnimeWatchController> {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  '${(progress * 100).toStringAsFixed(1)}% hoàn thành',
+                  hasKnownTotal
+                      ? '${(progress * 100).toStringAsFixed(1)}% hoàn thành'
+                      : 'Tiến trình không xác định',
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondary,
                   ),

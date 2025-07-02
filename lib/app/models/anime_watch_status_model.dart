@@ -177,13 +177,27 @@ class AnimeWatchStatusModel {
 
   /// Tính phần trăm đã xem
   double get watchProgress {
-    if (totalEpisodes == null || totalEpisodes! <= 0) return 0.0;
-    return watchedEpisodes.length / totalEpisodes!;
+    if (totalEpisodes == null || totalEpisodes! <= 0) {
+      // Nếu không biết tổng số tập, trả về 0.0 để hiển thị progress không xác định
+      return 0.0;
+    }
+    return (watchedEpisodes.length / totalEpisodes!).clamp(0.0, 1.0);
   }
 
   /// Kiểm tra xem đã xem hết chưa
   bool get isCompleted {
-    if (totalEpisodes == null || totalEpisodes! <= 0) return false;
+    if (totalEpisodes == null || totalEpisodes! <= 0) {
+      // Nếu không biết tổng số tập, không thể xác định đã hoàn thành
+      return false;
+    }
     return watchedEpisodes.length >= totalEpisodes!;
+  }
+
+  /// Lấy text hiển thị progress
+  String get progressText {
+    if (totalEpisodes == null || totalEpisodes! <= 0) {
+      return '${watchedEpisodes.length}/? tập';
+    }
+    return '${watchedEpisodes.length}/$totalEpisodes tập';
   }
 }
