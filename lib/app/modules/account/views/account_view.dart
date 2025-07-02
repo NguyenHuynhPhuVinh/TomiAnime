@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/account_controller.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/firestore_service.dart';
@@ -11,8 +12,18 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../theme/app_decorations.dart';
 
-class AccountView extends GetView<AccountController> {
+class AccountView extends StatefulWidget {
   const AccountView({Key? key}) : super(key: key);
+
+  @override
+  State<AccountView> createState() => _AccountViewState();
+}
+
+class _AccountViewState extends State<AccountView> {
+  AccountController get controller => Get.find<AccountController>();
+
+  // Key để force rebuild FutureBuilder
+  Key _futureBuilderKey = UniqueKey();
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +85,7 @@ class AccountView extends GetView<AccountController> {
     }
 
     return FutureBuilder<UserModel?>(
+      key: _futureBuilderKey,
       future: firestoreService.getUser(user.uid),
       builder: (context, snapshot) {
         final userModel = snapshot.data;
@@ -96,15 +108,54 @@ class AccountView extends GetView<AccountController> {
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(12.w),
+                width: 64.w,
+                height: 64.w,
                 decoration: BoxDecoration(
-                  gradient: AppDecorations.radialGradientWithColor(AppColors.accountTheme),
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.accountTheme,
+                    width: 2,
+                  ),
                 ),
-                child: Icon(
-                  Iconsax.profile_circle,
-                  size: 40.r,
-                  color: AppColors.accountTheme,
+                child: ClipOval(
+                  child: userModel?.avatarUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: userModel!.avatarUrl!,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            color: AppColors.surface,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.accountTheme),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            padding: EdgeInsets.all(12.w),
+                            decoration: BoxDecoration(
+                              gradient: AppDecorations.radialGradientWithColor(AppColors.accountTheme),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Iconsax.profile_circle,
+                              size: 40.r,
+                              color: AppColors.accountTheme,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            gradient: AppDecorations.radialGradientWithColor(AppColors.accountTheme),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Iconsax.profile_circle,
+                            size: 40.r,
+                            color: AppColors.accountTheme,
+                          ),
+                        ),
                 ),
               ),
               SizedBox(width: 16.w),
@@ -147,6 +198,21 @@ class AccountView extends GetView<AccountController> {
   Widget _buildMenuItems() {
     return Column(
       children: [
+        _buildMenuItem(
+          icon: Iconsax.user_edit,
+          title: 'Quản lý tài khoản',
+          subtitle: 'Đổi tên và ảnh đại diện',
+          onTap: () async {
+            final result = await Get.toNamed('/account-management');
+            if (result == true) {
+              // Force reload FutureBuilder để lấy dữ liệu mới
+              setState(() {
+                _futureBuilderKey = UniqueKey();
+              });
+            }
+          },
+        ),
+        SizedBox(height: 12.h),
         _buildMenuItem(
           icon: Iconsax.heart,
           title: 'Anime của tôi',

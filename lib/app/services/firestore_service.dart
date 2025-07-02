@@ -75,6 +75,39 @@ class FirestoreService extends GetxService {
     }
   }
 
+  /// Cập nhật thông tin user
+  Future<bool> updateUser(String uid, {String? displayName, String? avatarUrl}) async {
+    try {
+      final updateData = <String, dynamic>{};
+
+      if (displayName != null) {
+        updateData['displayName'] = displayName;
+      }
+
+      if (avatarUrl != null) {
+        updateData['avatarUrl'] = avatarUrl;
+      }
+
+      print('🔄 Update data: $updateData');
+
+      if (updateData.isNotEmpty) {
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .update(updateData);
+
+        print('✅ User updated successfully');
+        return true;
+      }
+
+      print('⚠️ No data to update');
+      return true; // Trả về true vì không có lỗi, chỉ là không có gì để cập nhật
+    } catch (e) {
+      print('❌ Error updating user: $e');
+      return false;
+    }
+  }
+
 
 
   // ==================== ANIME WATCH STATUS METHODS ====================

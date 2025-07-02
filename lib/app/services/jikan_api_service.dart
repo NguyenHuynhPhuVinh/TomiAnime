@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../models/anime_model.dart';
+import '../models/character_model.dart';
 
 class JikanApiService {
   static const String baseUrl = 'https://api.jikan.moe/v4';
@@ -209,6 +210,43 @@ class JikanApiService {
       return AnimeRelationsResponse.fromJson(response.data);
     } catch (e) {
       throw Exception('Lỗi khi lấy anime relations: $e');
+    }
+  }
+
+  // Tìm kiếm nhân vật anime
+  Future<CharacterSearchResponse> searchCharacters({
+    required String query,
+    int page = 1,
+    int limit = 20,
+    String? orderBy, // mal_id, name, favorites
+    String? sort, // desc, asc
+    String? letter, // Return entries starting with the given letter
+  }) async {
+    try {
+      final Map<String, dynamic> queryParams = {
+        'q': query,
+        'page': page,
+        'limit': limit,
+      };
+
+      if (orderBy != null && orderBy.isNotEmpty) {
+        queryParams['order_by'] = orderBy;
+      }
+      if (sort != null && sort.isNotEmpty) {
+        queryParams['sort'] = sort;
+      }
+      if (letter != null && letter.isNotEmpty) {
+        queryParams['letter'] = letter;
+      }
+
+      final response = await _dio.get(
+        '/characters',
+        queryParameters: queryParams,
+      );
+
+      return CharacterSearchResponse.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Lỗi khi tìm kiếm nhân vật: $e');
     }
   }
 }

@@ -19,6 +19,8 @@ abstract class Routes {
   static const GACHA = _Paths.GACHA;
   static const ACCOUNT = _Paths.ACCOUNT;
   static const INFO = _Paths.INFO;
+  static const ACCOUNT_MANAGEMENT = _Paths.ACCOUNT_MANAGEMENT;
+  static const CHARACTER_SEARCH = _Paths.CHARACTER_SEARCH;
 }
 
 abstract class _Paths {
@@ -39,4 +41,6 @@ abstract class _Paths {
   static const GACHA = '/gacha';
   static const ACCOUNT = '/account';
   static const INFO = '/info';
+  static const ACCOUNT_MANAGEMENT = '/account-management';
+  static const CHARACTER_SEARCH = '/character-search';
 }

@@ -30,6 +30,10 @@ import '../modules/account/bindings/account_binding.dart';
 import '../modules/account/views/account_view.dart';
 import '../modules/info/bindings/info_binding.dart';
 import '../modules/info/views/info_view.dart';
+import '../modules/account_management/bindings/account_management_binding.dart';
+import '../modules/account_management/views/account_management_view.dart';
+import '../modules/character_search/bindings/character_search_binding.dart';
+import '../modules/character_search/views/character_search_view.dart';
 
 part 'app_routes.dart';
 
@@ -123,6 +127,18 @@ class AppPages {
       name: _Paths.INFO,
       page: () => const InfoView(),
       binding: InfoBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.ACCOUNT_MANAGEMENT,
+      page: () => const AccountManagementView(),
+      binding: AccountManagementBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.CHARACTER_SEARCH,
+      page: () => const CharacterSearchView(),
+      binding: CharacterSearchBinding(),
       middlewares: [AuthMiddleware()],
     ),
   ];
