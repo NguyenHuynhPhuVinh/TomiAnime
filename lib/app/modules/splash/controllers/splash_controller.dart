@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -8,6 +7,7 @@ import '../../../services/firestore_service.dart';
 import '../../../services/streaming_data_service.dart';
 import '../../../services/app_update_service.dart';
 import '../../../widgets/update_dialog.dart';
+import '../../../utils/notification_helper.dart';
 
 class SplashController extends GetxController {
   // Observable variables
@@ -106,8 +106,6 @@ class SplashController extends GetxController {
     }
   }
 
-
-
   void _startAnimations() {
     // Logo size animation
     Future.delayed(const Duration(milliseconds: 300), () {
@@ -146,13 +144,10 @@ class SplashController extends GetxController {
   }
 
   void _handleInitializationError(dynamic error) {
-    Get.snackbar(
-      'Lỗi khởi tạo',
-      'Có lỗi xảy ra khi khởi tạo ứng dụng: $error',
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
+    NotificationHelper.showError(
+      title: 'Lỗi khởi tạo',
+      message: 'Có lỗi xảy ra khi khởi tạo ứng dụng: $error',
       duration: const Duration(seconds: 5),
-      snackPosition: SnackPosition.BOTTOM,
     );
 
     // Retry after 3 seconds

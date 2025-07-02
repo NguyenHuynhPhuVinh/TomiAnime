@@ -6,6 +6,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../models/app_update_model.dart';
 import '../services/app_update_service.dart';
+import '../utils/notification_helper.dart';
 
 class UpdateDialog {
   static void show(AppUpdateModel updateInfo) {
@@ -251,30 +252,21 @@ class _UpdateDialogContentState extends State<_UpdateDialogContent> {
       if (success) {
         Get.back();
         widget.onUpdateCompleted?.call();
-        Get.snackbar(
-          'Thành công',
-          'Đang cài đặt cập nhật... File APK sẽ tự động xóa sau 30 giây.',
-          backgroundColor: AppColors.success,
-          colorText: Colors.white,
+        NotificationHelper.showSuccess(
+          title: 'Thành công',
+          message: 'Đang cài đặt cập nhật... File APK sẽ tự động xóa sau 30 giây.',
           duration: const Duration(seconds: 5),
-          icon: Icon(Iconsax.tick_circle, color: Colors.white),
         );
       } else {
-        Get.snackbar(
-          'Lỗi',
-          'Không thể tải cập nhật. Vui lòng thử lại.',
-          backgroundColor: AppColors.error,
-          colorText: Colors.white,
-          icon: Icon(Iconsax.close_circle, color: Colors.white),
+        NotificationHelper.showError(
+          title: 'Lỗi',
+          message: 'Không thể tải cập nhật. Vui lòng thử lại.',
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
-        'Có lỗi xảy ra: $e',
-        backgroundColor: AppColors.error,
-        colorText: Colors.white,
-        icon: Icon(Iconsax.close_circle, color: Colors.white),
+      NotificationHelper.showError(
+        title: 'Lỗi',
+        message: 'Có lỗi xảy ra: $e',
       );
     } finally {
       isDownloading.value = false;

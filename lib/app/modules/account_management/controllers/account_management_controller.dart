@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../models/user_model.dart';
+import '../../../utils/notification_helper.dart';
 
 class AccountManagementController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -41,10 +42,9 @@ class AccountManagementController extends GetxController {
         displayNameController.text = userModel.displayName ?? '';
       }
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
-        'Không thể tải thông tin tài khoản',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi',
+        message: 'Không thể tải thông tin tài khoản',
       );
     } finally {
       isLoading.value = false;
@@ -88,10 +88,9 @@ class AccountManagementController extends GetxController {
       }
 
       if (!hasChanges && newDisplayName == null && newAvatarUrl == null) {
-        Get.snackbar(
-          'Thông báo',
-          'Không có thay đổi nào để cập nhật',
-          snackPosition: SnackPosition.BOTTOM,
+        NotificationHelper.showWarning(
+          title: 'Thông báo',
+          message: 'Không có thay đổi nào để cập nhật',
         );
         return;
       }
@@ -121,25 +120,22 @@ class AccountManagementController extends GetxController {
         // Quay về trước, sau đó mới hiển thị snackbar
         Get.back(result: true);
 
-        // Hiển thị snackbar sau khi đã quay về
-        Get.snackbar(
-          'Thành công',
-          'Cập nhật thông tin thành công',
-          snackPosition: SnackPosition.BOTTOM,
+        // Hiển thị thông báo sau khi đã quay về
+        NotificationHelper.showSuccess(
+          title: 'Thành công',
+          message: 'Cập nhật thông tin thành công',
         );
       } else {
-        Get.snackbar(
-          'Lỗi',
-          'Không thể cập nhật thông tin',
-          snackPosition: SnackPosition.BOTTOM,
+        NotificationHelper.showError(
+          title: 'Lỗi',
+          message: 'Không thể cập nhật thông tin',
         );
       }
     } catch (e) {
       print('❌ Exception during update: $e');
-      Get.snackbar(
-        'Lỗi',
-        'Đã xảy ra lỗi khi cập nhật: $e',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi',
+        message: 'Đã xảy ra lỗi khi cập nhật: $e',
       );
     } finally {
       isUpdating.value = false;

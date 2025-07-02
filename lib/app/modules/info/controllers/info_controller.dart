@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../../../utils/notification_helper.dart';
 
 class InfoController extends GetxController {
   final Rx<PackageInfo?> packageInfo = Rx<PackageInfo?>(null);
@@ -17,10 +18,9 @@ class InfoController extends GetxController {
       final info = await PackageInfo.fromPlatform();
       packageInfo.value = info;
     } catch (e) {
-      Get.snackbar(
-        'Lỗi',
-        'Không thể tải thông tin ứng dụng',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi',
+        message: 'Không thể tải thông tin ứng dụng',
       );
     } finally {
       isLoading.value = false;

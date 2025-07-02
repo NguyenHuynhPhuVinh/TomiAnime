@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../../models/character_model.dart';
 import '../../../services/jikan_api_service.dart';
+import '../../../utils/notification_helper.dart';
 
 class CharacterSearchController extends GetxController {
   final searchController = TextEditingController();
@@ -50,10 +51,9 @@ class CharacterSearchController extends GetxController {
 
     } catch (e) {
       print('❌ Error searching characters: $e');
-      Get.snackbar(
-        'Lỗi',
-        'Không thể tìm kiếm nhân vật',
-        snackPosition: SnackPosition.BOTTOM,
+      NotificationHelper.showError(
+        title: 'Lỗi',
+        message: 'Không thể tìm kiếm nhân vật',
       );
     } finally {
       isLoading.value = false;
