@@ -22,7 +22,8 @@ class AppUpdateModel {
       downloadUrl: json['download_url'] ?? '',
       changelog: json['changelog'] ?? '',
       forceUpdate: json['force_update'] ?? false,
-      releaseDate: DateTime.tryParse(json['release_date'] ?? '') ?? DateTime.now(),
+      releaseDate:
+          DateTime.tryParse(json['release_date'] ?? '') ?? DateTime.now(),
     );
   }
 
@@ -42,16 +43,20 @@ class AppUpdateModel {
     try {
       final currentParts = currentVersion.split('.').map(int.parse).toList();
       final newParts = version.split('.').map(int.parse).toList();
-      
+
       // Đảm bảo cả hai version có cùng số phần
-      while (currentParts.length < 3) currentParts.add(0);
-      while (newParts.length < 3) newParts.add(0);
-      
+      while (currentParts.length < 3) {
+        currentParts.add(0);
+      }
+      while (newParts.length < 3) {
+        newParts.add(0);
+      }
+
       for (int i = 0; i < 3; i++) {
         if (newParts[i] > currentParts[i]) return true;
         if (newParts[i] < currentParts[i]) return false;
       }
-      
+
       return false; // Versions are equal
     } catch (e) {
       print('Error comparing versions: $e');

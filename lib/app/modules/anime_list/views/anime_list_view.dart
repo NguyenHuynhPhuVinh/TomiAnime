@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/anime_list_controller.dart';
 import '../../../models/anime_watch_status_model.dart';
+import '../../../models/anime_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../theme/app_decorations.dart';
@@ -19,7 +20,8 @@ class AnimeListView extends StatefulWidget {
   State<AnimeListView> createState() => _AnimeListViewState();
 }
 
-class _AnimeListViewState extends State<AnimeListView> with SingleTickerProviderStateMixin {
+class _AnimeListViewState extends State<AnimeListView>
+    with SingleTickerProviderStateMixin {
   late AnimeListController controller;
 
   @override
@@ -53,9 +55,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
       backgroundColor: AppColors.backgroundPrimary,
       appBar: _buildAppBar(),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AppDecorations.backgroundGradient,
-        ),
+        decoration: BoxDecoration(gradient: AppDecorations.backgroundGradient),
         child: TabBarView(
           children: [
             _buildTabContent(AnimeWatchStatus.saved),
@@ -66,8 +66,6 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
       ),
     );
   }
-
-
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
@@ -101,10 +99,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
               children: [
                 Icon(Iconsax.heart, size: 16.r),
                 SizedBox(height: 2.h),
-                Text(
-                  'Đã lưu',
-                  style: TextStyle(fontSize: 10.sp),
-                ),
+                Text('Đã lưu', style: TextStyle(fontSize: 10.sp)),
               ],
             ),
           ),
@@ -114,10 +109,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
               children: [
                 Icon(Iconsax.play_circle, size: 16.r),
                 SizedBox(height: 2.h),
-                Text(
-                  'Đang xem',
-                  style: TextStyle(fontSize: 10.sp),
-                ),
+                Text('Đang xem', style: TextStyle(fontSize: 10.sp)),
               ],
             ),
           ),
@@ -127,10 +119,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
               children: [
                 Icon(Iconsax.tick_circle, size: 16.r),
                 SizedBox(height: 2.h),
-                Text(
-                  'Hoàn thành',
-                  style: TextStyle(fontSize: 10.sp),
-                ),
+                Text('Hoàn thành', style: TextStyle(fontSize: 10.sp)),
               ],
             ),
           ),
@@ -208,11 +197,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Iconsax.warning_2,
-              size: 64.r,
-              color: AppColors.error,
-            ),
+            Icon(Iconsax.warning_2, size: 64.r, color: AppColors.error),
             SizedBox(height: 16.h),
             Text(
               'Có lỗi xảy ra',
@@ -256,11 +241,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              _getEmptyIcon(),
-              size: 64.r,
-              color: AppColors.textSecondary,
-            ),
+            Icon(_getEmptyIcon(), size: 64.r, color: AppColors.textSecondary),
             SizedBox(height: 16.h),
             Text(
               _getEmptyTitle(),
@@ -365,8 +346,10 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
                   child: CachedNetworkImage(
                     imageUrl: _getImageUrl(anime.images),
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => AnimeUtils.buildImagePlaceholder(),
-                    errorWidget: (context, url, error) => AnimeUtils.buildImageError(),
+                    placeholder: (context, url) =>
+                        AnimeUtils.buildImagePlaceholder(),
+                    errorWidget: (context, url, error) =>
+                        AnimeUtils.buildImageError(),
                   ),
                 ),
               ),
@@ -376,7 +359,10 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
                 child: Stack(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(right: 40.w, bottom: 8.h), // Để chỗ cho nút xóa
+                      padding: EdgeInsets.only(
+                        right: 40.w,
+                        bottom: 8.h,
+                      ), // Để chỗ cho nút xóa
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -452,7 +438,8 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
             ),
           ),
         ),
-        if (anime.status == AnimeWatchStatus.watching || anime.status == AnimeWatchStatus.completed) ...[
+        if (anime.status == AnimeWatchStatus.watching ||
+            anime.status == AnimeWatchStatus.completed) ...[
           SizedBox(width: 6.w),
           Flexible(
             child: Text(
@@ -480,8 +467,6 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
     }
   }
 
-
-
   void _onAnimeCardTap(AnimeWatchStatusModel anime, bool isAvailable) {
     if (isAvailable) {
       _onWatchPressed(anime);
@@ -498,20 +483,60 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
     final nguoncUrl = streamingService.getNguoncUrl(anime.malId);
 
     if (nguoncUrl != null) {
-      Get.toNamed(
-        '/anime-watch',
-        arguments: {
+      try {
+        // Tạo AnimeModel từ AnimeWatchStatusModel để đồng bộ data
+        final animeModel = _createAnimeModelFromWatchStatus(anime);
+
+        final arguments = {
           'nguoncUrl': nguoncUrl,
           'animeTitle': anime.title,
           'malId': anime.malId,
-        },
-      );
+          'animeData': animeModel, // Truyền data anime đầy đủ
+        };
+
+        Get.toNamed('/anime-watch', arguments: arguments);
+      } catch (e) {
+        NotificationHelper.showError(
+          title: 'Lỗi',
+          message: 'Không thể tạo dữ liệu anime: $e',
+        );
+      }
     } else {
       NotificationHelper.showError(
         title: 'Lỗi',
         message: 'Không tìm thấy link xem cho anime này',
       );
     }
+  }
+
+  /// Tạo AnimeModel từ AnimeWatchStatusModel để đồng bộ data
+  AnimeModel _createAnimeModelFromWatchStatus(
+    AnimeWatchStatusModel watchStatus,
+  ) {
+    // Xử lý images an toàn
+    AnimeImages images;
+    try {
+      images = AnimeImages.fromJson(watchStatus.images);
+    } catch (e) {
+      images = AnimeImages(jpg: '', webp: '');
+    }
+
+    return AnimeModel(
+      malId: watchStatus.malId,
+      title: watchStatus.title,
+      titleEnglish: watchStatus.titleEnglish,
+      titleJapanese: watchStatus.titleJapanese,
+      type: watchStatus.type,
+      episodes: watchStatus.totalEpisodes,
+      score: watchStatus.score,
+      genres: watchStatus.genres,
+      studios: [], // Không có trong watch status
+      images: images,
+      synopsis: null, // Không có trong watch status
+      status: 'Unknown', // Không có trong watch status
+      aired: null, // Không có trong watch status
+      scoredBy: null, // Không có trong watch status
+    );
   }
 
   void _onDeletePressed(AnimeWatchStatusModel anime) {
@@ -523,11 +548,7 @@ class _AnimeListViewState extends State<AnimeListView> with SingleTickerProvider
         ),
         title: Row(
           children: [
-            Icon(
-              Iconsax.warning_2,
-              color: AppColors.error,
-              size: 24.r,
-            ),
+            Icon(Iconsax.warning_2, color: AppColors.error, size: 24.r),
             SizedBox(width: 8.w),
             Text(
               'Xóa anime',

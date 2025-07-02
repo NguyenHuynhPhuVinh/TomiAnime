@@ -73,7 +73,8 @@ class _AnimeDetailContent extends StatefulWidget {
 class _AnimeDetailContentState extends State<_AnimeDetailContent> {
   final Rxn<AnimeWatchStatusModel> watchStatus = Rxn<AnimeWatchStatusModel>();
   final RxBool isLoadingStatus = false.obs;
-  final Rxn<AnimeRelationsResponse> animeRelations = Rxn<AnimeRelationsResponse>();
+  final Rxn<AnimeRelationsResponse> animeRelations =
+      Rxn<AnimeRelationsResponse>();
   final RxBool isLoadingRelations = false.obs;
   final JikanApiService _apiService = JikanApiService();
 
@@ -279,6 +280,8 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
                     .toList(),
               ),
             ],
+            // Hiển thị trạng thái xem nếu có
+            _buildWatchStatusSection(),
             // Hiển thị tóm tắt chỉ khi anime không có nút xem
             _buildSynopsisSection(),
             // Nút xem anime và lưu anime
@@ -321,7 +324,9 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
             ),
           ),
           SizedBox(height: 12.h),
-          ...filteredAnimeRelations.map((relation) => _buildRelationGroup(relation)),
+          ...filteredAnimeRelations.map(
+            (relation) => _buildRelationGroup(relation),
+          ),
         ],
       );
     });
@@ -330,7 +335,9 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
   /// Widget hiển thị một nhóm relation
   Widget _buildRelationGroup(AnimeRelation relation) {
     // Lọc chỉ lấy anime entries
-    final animeEntries = relation.entry.where((entry) => entry.type == 'anime').toList();
+    final animeEntries = relation.entry
+        .where((entry) => entry.type == 'anime')
+        .toList();
 
     if (animeEntries.isEmpty) {
       return const SizedBox.shrink();
@@ -365,9 +372,7 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
           decoration: BoxDecoration(
             color: AppColors.animeTheme.withOpacity(0.05),
             borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(
-              color: AppColors.animeTheme.withOpacity(0.2),
-            ),
+            border: Border.all(color: AppColors.animeTheme.withOpacity(0.2)),
           ),
           child: Row(
             children: [
@@ -448,6 +453,108 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
         message: 'Không thể tải thông tin anime này',
         duration: const Duration(seconds: 2),
       );
+    }
+  }
+
+  /// Widget hiển thị section trạng thái xem anime nếu có
+  Widget _buildWatchStatusSection() {
+    return Obx(() {
+      final status = watchStatus.value;
+      // Chỉ hiển thị khi đang xem hoặc đã xem xong, không hiển thị khi chỉ lưu
+      if (status == null || status.status == AnimeWatchStatus.saved) {
+        return const SizedBox.shrink();
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 20.h),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(16.r),
+            decoration: BoxDecoration(
+              color: _getWatchStatusColor(status.status).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: _getWatchStatusColor(status.status).withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      _getWatchStatusIcon(status.status),
+                      color: _getWatchStatusColor(status.status),
+                      size: 20.r,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      status.status.displayName,
+                      style: AppTextStyles.h5.copyWith(
+                        color: _getWatchStatusColor(status.status),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                // Luôn hiển thị tiến trình vì chỉ show khi đang xem hoặc xem xong
+                SizedBox(height: 8.h),
+                Text(
+                  'Tiến trình: ${status.progressText}',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                // Hiển thị progress bar khi đang xem và biết tổng số tập
+                if (status.status == AnimeWatchStatus.watching &&
+                    status.totalEpisodes != null &&
+                    status.totalEpisodes! > 0) ...[
+                  SizedBox(height: 8.h),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4.r),
+                    child: LinearProgressIndicator(
+                      value: status.watchProgress,
+                      backgroundColor: AppColors.textSecondary.withOpacity(0.2),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        _getWatchStatusColor(status.status),
+                      ),
+                      minHeight: 4.h,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  /// Lấy icon cho trạng thái xem
+  IconData _getWatchStatusIcon(AnimeWatchStatus status) {
+    switch (status) {
+      case AnimeWatchStatus.saved:
+        return Iconsax.heart5;
+      case AnimeWatchStatus.watching:
+        return Iconsax.play_circle;
+      case AnimeWatchStatus.completed:
+        return Iconsax.tick_circle;
+    }
+  }
+
+  /// Lấy màu cho trạng thái xem
+  Color _getWatchStatusColor(AnimeWatchStatus status) {
+    switch (status) {
+      case AnimeWatchStatus.saved:
+        return AppColors.animeTheme;
+      case AnimeWatchStatus.watching:
+        return AppColors.warning;
+      case AnimeWatchStatus.completed:
+        return AppColors.success;
     }
   }
 
@@ -616,8 +723,6 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
     }
   }
 
-
-
   /// Xử lý khi nhấn nút lưu anime
   Future<void> _onSavePressed() async {
     final authService = AuthService.instance;
@@ -646,7 +751,8 @@ class _AnimeDetailContentState extends State<_AnimeDetailContent> {
         watchStatus.value = newWatchStatus;
         NotificationHelper.showSuccess(
           title: 'Đã lưu',
-          message: 'Đã lưu ${widget.anime.title} vào danh sách\nVào "Anime của tôi" để quản lý',
+          message:
+              'Đã lưu ${widget.anime.title} vào danh sách\nVào "Anime của tôi" để quản lý',
           duration: const Duration(seconds: 3),
         );
       } else {
