@@ -12,6 +12,8 @@ import '../../../services/auth_service.dart';
 import '../../../services/jikan_api_service.dart';
 import '../../../services/daily_quest_service.dart';
 import '../../../models/daily_quest_model.dart';
+import '../../../services/achievement_quest_service.dart';
+import '../../../models/achievement_quest_model.dart';
 import '../../../models/anime_watch_status_model.dart';
 import '../../../utils/notification_helper.dart';
 import '../utils/anime_utils.dart';
@@ -66,11 +68,17 @@ class AnimeDetailModal {
       final authService = AuthService.instance;
       if (!authService.isLoggedIn) return;
 
-      final questService = DailyQuestService.instance;
       final uid = authService.currentUser!.uid;
 
+      // Cập nhật daily quest
+      final questService = DailyQuestService.instance;
       await questService.updateQuestProgress(uid, QuestType.viewAnimeInfo);
-      print('✅ Marked view anime info quest');
+
+      // Cập nhật achievement quest
+      final achievementService = AchievementQuestService.instance;
+      await achievementService.updateAchievementProgress(uid, AchievementType.animeInfoViewed);
+
+      print('✅ Marked view anime info quest and achievement');
     } catch (e) {
       print('❌ Error marking view anime info quest: $e');
     }

@@ -209,6 +209,13 @@ class _AccountViewState extends State<AccountView> {
         ),
         SizedBox(height: 12.h),
         _buildMenuItem(
+          icon: Iconsax.medal_star,
+          title: 'Thành tựu',
+          subtitle: 'Nhiệm vụ tích lũy dài hạn',
+          onTap: () => Get.toNamed('/achievement-quest'),
+        ),
+        SizedBox(height: 12.h),
+        _buildMenuItem(
           icon: Iconsax.user_edit,
           title: 'Quản lý tài khoản',
           subtitle: 'Đổi tên và ảnh đại diện',

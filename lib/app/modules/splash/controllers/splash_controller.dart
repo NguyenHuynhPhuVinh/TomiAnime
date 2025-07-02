@@ -7,6 +7,7 @@ import '../../../services/firestore_service.dart';
 import '../../../services/streaming_data_service.dart';
 import '../../../services/app_update_service.dart';
 import '../../../services/daily_quest_service.dart';
+import '../../../services/achievement_quest_service.dart';
 import '../../../widgets/update_dialog.dart';
 import '../../../utils/notification_helper.dart';
 
@@ -44,6 +45,7 @@ class SplashController extends GetxController {
       Get.put(FirestoreService());
       Get.put(AuthService());
       Get.put(DailyQuestService());
+      Get.put(AchievementQuestService());
 
       // Initialize Streaming Data Service
       final streamingService = StreamingDataService();

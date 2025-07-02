@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';
 import '../models/anime_watch_status_model.dart';
+import '../services/achievement_quest_service.dart';
+import '../models/achievement_quest_model.dart';
+import '../modules/achievement_quest/controllers/achievement_quest_controller.dart';
 
 class FirestoreService extends GetxService {
   static FirestoreService get instance => Get.find();
@@ -460,6 +463,11 @@ class FirestoreService extends GetxService {
           : '${updatedWatchedEpisodes.length}/? episodes';
       print('   📺 Progress: $progressText');
 
+      // Nếu anime đã hoàn thành, đánh dấu achievement
+      if (newStatus == AnimeWatchStatus.completed) {
+        await _markAnimeCompletedAchievement(uid);
+      }
+
       return true;
     } catch (e) {
       print('❌ Error marking episode as watched: $e');
@@ -545,6 +553,27 @@ class FirestoreService extends GetxService {
     } catch (e) {
       print('❌ Error removing anime watch status: $e');
       return false;
+    }
+  }
+
+  /// Đánh dấu achievement hoàn thành anime
+  Future<void> _markAnimeCompletedAchievement(String uid) async {
+    try {
+      // Import services
+      if (Get.isRegistered<AchievementQuestService>()) {
+        final achievementService = Get.find<AchievementQuestService>();
+        await achievementService.updateAchievementProgress(uid, AchievementType.animeCompleted);
+
+        // Cập nhật controller nếu có
+        if (Get.isRegistered<AchievementQuestController>()) {
+          final controller = Get.find<AchievementQuestController>();
+          controller.markAnimeCompletedAchievement();
+        }
+
+        print('✅ Marked anime completed achievement');
+      }
+    } catch (e) {
+      print('❌ Error marking anime completed achievement: $e');
     }
   }
 }

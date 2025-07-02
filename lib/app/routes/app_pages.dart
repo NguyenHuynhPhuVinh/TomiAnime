@@ -36,6 +36,8 @@ import '../modules/character_search/bindings/character_search_binding.dart';
 import '../modules/character_search/views/character_search_view.dart';
 import '../modules/daily_quest/bindings/daily_quest_binding.dart';
 import '../modules/daily_quest/views/daily_quest_view.dart';
+import '../modules/achievement_quest/bindings/achievement_quest_binding.dart';
+import '../modules/achievement_quest/views/achievement_quest_view.dart';
 
 part 'app_routes.dart';
 
@@ -147,6 +149,12 @@ class AppPages {
       name: _Paths.DAILY_QUEST,
       page: () => const DailyQuestView(),
       binding: DailyQuestBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.ACHIEVEMENT_QUEST,
+      page: () => const AchievementQuestView(),
+      binding: AchievementQuestBinding(),
       middlewares: [AuthMiddleware()],
     ),
   ];

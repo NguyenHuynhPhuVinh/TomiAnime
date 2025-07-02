@@ -8,6 +8,9 @@ import '../../../services/auth_service.dart';
 import '../../../services/daily_quest_service.dart';
 import '../../../models/daily_quest_model.dart';
 import '../../daily_quest/controllers/daily_quest_controller.dart';
+import '../../../services/achievement_quest_service.dart';
+import '../../../models/achievement_quest_model.dart';
+import '../../achievement_quest/controllers/achievement_quest_controller.dart';
 
 class AnimeWatchController extends GetxController {
   final NguoncApiService _apiService = NguoncApiService();
@@ -152,25 +155,35 @@ class AnimeWatchController extends GetxController {
   /// Đánh dấu nhiệm vụ xem tập anime
   Future<void> _markWatchEpisodeQuest() async {
     try {
-      // Kiểm tra xem có DailyQuestController đang chạy không
+      final authService = AuthService.instance;
+      if (!authService.isLoggedIn) return;
+
+      final uid = authService.currentUser!.uid;
+
+      // Cập nhật daily quest
       if (Get.isRegistered<DailyQuestController>()) {
         final questController = Get.find<DailyQuestController>();
         await questController.markWatchEpisodeQuest();
       } else {
         // Fallback: gọi trực tiếp service
-        final authService = AuthService.instance;
-        if (!authService.isLoggedIn) return;
-
         final questService = DailyQuestService.instance;
-        final uid = authService.currentUser!.uid;
-
         await Future.wait([
           questService.updateQuestProgress(uid, QuestType.watchEpisode),
           questService.updateQuestProgress(uid, QuestType.watchMultipleEpisodes),
         ]);
       }
 
-      print('✅ Marked watch episode quest');
+      // Cập nhật achievement quest
+      if (Get.isRegistered<AchievementQuestController>()) {
+        final achievementController = Get.find<AchievementQuestController>();
+        await achievementController.markWatchEpisodeAchievement();
+      } else {
+        // Fallback: gọi trực tiếp service
+        final achievementService = AchievementQuestService.instance;
+        await achievementService.updateAchievementProgress(uid, AchievementType.episodesWatched);
+      }
+
+      print('✅ Marked watch episode quest and achievement');
     } catch (e) {
       print('❌ Error marking watch episode quest: $e');
     }
