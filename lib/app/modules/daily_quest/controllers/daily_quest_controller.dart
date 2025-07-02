@@ -118,13 +118,31 @@ class DailyQuestController extends GetxController {
     if (!_authService.isLoggedIn) return;
 
     final uid = _authService.currentUser!.uid;
-    final success = await _questService.updateQuestProgress(uid, QuestType.watchEpisode);
 
-    if (success) {
-      _updateQuestProgressLocal(QuestType.watchEpisode, 1);
+    // Cập nhật cả 2 nhiệm vụ: xem 1 tập và xem 3 tập
+    await Future.wait([
+      _questService.updateQuestProgress(uid, QuestType.watchEpisode),
+      _questService.updateQuestProgress(uid, QuestType.watchMultipleEpisodes),
+    ]);
+
+    _updateQuestProgressLocal(QuestType.watchEpisode, 1);
+    _updateQuestProgressLocal(QuestType.watchMultipleEpisodes, 1);
+
+    // Kiểm tra xem có nhiệm vụ nào vừa hoàn thành không
+    final watchEpisodeQuest = dailyQuests.firstWhereOrNull((q) => q.type == QuestType.watchEpisode);
+    final watchMultipleQuest = dailyQuests.firstWhereOrNull((q) => q.type == QuestType.watchMultipleEpisodes);
+
+    if (watchEpisodeQuest?.isCompleted == true && watchEpisodeQuest?.status != QuestStatus.claimed) {
       NotificationHelper.showSuccess(
-        title: 'Nhiệm vụ cập nhật',
+        title: 'Nhiệm vụ hoàn thành!',
         message: 'Đã hoàn thành nhiệm vụ xem tập anime!',
+      );
+    }
+
+    if (watchMultipleQuest?.isCompleted == true && watchMultipleQuest?.status != QuestStatus.claimed) {
+      NotificationHelper.showSuccess(
+        title: 'Nhiệm vụ hoàn thành!',
+        message: 'Đã hoàn thành nhiệm vụ xem 3 tập anime!',
       );
     }
   }

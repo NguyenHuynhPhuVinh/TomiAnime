@@ -7,6 +7,7 @@ import '../../../services/firestore_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/daily_quest_service.dart';
 import '../../../models/daily_quest_model.dart';
+import '../../daily_quest/controllers/daily_quest_controller.dart';
 
 class AnimeWatchController extends GetxController {
   final NguoncApiService _apiService = NguoncApiService();
@@ -151,13 +152,24 @@ class AnimeWatchController extends GetxController {
   /// Đánh dấu nhiệm vụ xem tập anime
   Future<void> _markWatchEpisodeQuest() async {
     try {
-      final authService = AuthService.instance;
-      if (!authService.isLoggedIn) return;
+      // Kiểm tra xem có DailyQuestController đang chạy không
+      if (Get.isRegistered<DailyQuestController>()) {
+        final questController = Get.find<DailyQuestController>();
+        await questController.markWatchEpisodeQuest();
+      } else {
+        // Fallback: gọi trực tiếp service
+        final authService = AuthService.instance;
+        if (!authService.isLoggedIn) return;
 
-      final questService = DailyQuestService.instance;
-      final uid = authService.currentUser!.uid;
+        final questService = DailyQuestService.instance;
+        final uid = authService.currentUser!.uid;
 
-      await questService.updateQuestProgress(uid, QuestType.watchEpisode);
+        await Future.wait([
+          questService.updateQuestProgress(uid, QuestType.watchEpisode),
+          questService.updateQuestProgress(uid, QuestType.watchMultipleEpisodes),
+        ]);
+      }
+
       print('✅ Marked watch episode quest');
     } catch (e) {
       print('❌ Error marking watch episode quest: $e');

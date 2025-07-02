@@ -409,6 +409,8 @@ class DailyQuestView extends GetView<DailyQuestController> {
         return Iconsax.login;
       case QuestType.watchEpisode:
         return Iconsax.play;
+      case QuestType.watchMultipleEpisodes:
+        return Iconsax.video_play;
       case QuestType.onlineTime:
         return Iconsax.clock;
       case QuestType.viewAnimeInfo:
@@ -422,6 +424,8 @@ class DailyQuestView extends GetView<DailyQuestController> {
         return AppColors.success;
       case QuestType.watchEpisode:
         return AppColors.primary;
+      case QuestType.watchMultipleEpisodes:
+        return Colors.purple;
       case QuestType.onlineTime:
         return AppColors.warning;
       case QuestType.viewAnimeInfo:

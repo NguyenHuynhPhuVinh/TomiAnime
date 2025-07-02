@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 enum QuestType {
   login,
   watchEpisode,
+  watchMultipleEpisodes,
   onlineTime,
   viewAnimeInfo,
 }
@@ -186,6 +187,15 @@ class DailyQuestFactory {
         createdAt: date,
       ),
       DailyQuestModel(
+        id: '${dateStr}_watch_multiple_episodes',
+        type: QuestType.watchMultipleEpisodes,
+        title: 'Xem nhiều tập',
+        description: 'Xem 3 tập Anime trong ngày',
+        targetValue: 3,
+        reward: QuestReward(gold: 300, exp: 150, dailyPoints: 3),
+        createdAt: date,
+      ),
+      DailyQuestModel(
         id: '${dateStr}_online_time',
         type: QuestType.onlineTime,
         title: 'Thời gian online',
@@ -215,6 +225,8 @@ extension QuestTypeExtension on QuestType {
         return 'login';
       case QuestType.watchEpisode:
         return 'play';
+      case QuestType.watchMultipleEpisodes:
+        return 'video_play';
       case QuestType.onlineTime:
         return 'clock';
       case QuestType.viewAnimeInfo:
@@ -228,6 +240,8 @@ extension QuestTypeExtension on QuestType {
         return 'Đăng nhập';
       case QuestType.watchEpisode:
         return 'Xem tập';
+      case QuestType.watchMultipleEpisodes:
+        return 'Xem nhiều tập';
       case QuestType.onlineTime:
         return 'Online';
       case QuestType.viewAnimeInfo:
