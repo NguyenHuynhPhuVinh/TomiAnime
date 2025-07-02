@@ -34,6 +34,8 @@ import '../modules/account_management/bindings/account_management_binding.dart';
 import '../modules/account_management/views/account_management_view.dart';
 import '../modules/character_search/bindings/character_search_binding.dart';
 import '../modules/character_search/views/character_search_view.dart';
+import '../modules/daily_quest/bindings/daily_quest_binding.dart';
+import '../modules/daily_quest/views/daily_quest_view.dart';
 
 part 'app_routes.dart';
 
@@ -139,6 +141,12 @@ class AppPages {
       name: _Paths.CHARACTER_SEARCH,
       page: () => const CharacterSearchView(),
       binding: CharacterSearchBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.DAILY_QUEST,
+      page: () => const DailyQuestView(),
+      binding: DailyQuestBinding(),
       middlewares: [AuthMiddleware()],
     ),
   ];

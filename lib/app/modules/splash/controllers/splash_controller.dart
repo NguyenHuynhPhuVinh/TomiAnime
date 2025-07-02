@@ -6,6 +6,7 @@ import '../../../services/auth_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/streaming_data_service.dart';
 import '../../../services/app_update_service.dart';
+import '../../../services/daily_quest_service.dart';
 import '../../../widgets/update_dialog.dart';
 import '../../../utils/notification_helper.dart';
 
@@ -42,6 +43,7 @@ class SplashController extends GetxController {
       loadingText.value = 'Đang khởi tạo dịch vụ...';
       Get.put(FirestoreService());
       Get.put(AuthService());
+      Get.put(DailyQuestService());
 
       // Initialize Streaming Data Service
       final streamingService = StreamingDataService();

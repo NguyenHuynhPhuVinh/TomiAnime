@@ -21,6 +21,7 @@ abstract class Routes {
   static const INFO = _Paths.INFO;
   static const ACCOUNT_MANAGEMENT = _Paths.ACCOUNT_MANAGEMENT;
   static const CHARACTER_SEARCH = _Paths.CHARACTER_SEARCH;
+  static const DAILY_QUEST = _Paths.DAILY_QUEST;
 }
 
 abstract class _Paths {
@@ -43,4 +44,5 @@ abstract class _Paths {
   static const INFO = '/info';
   static const ACCOUNT_MANAGEMENT = '/account-management';
   static const CHARACTER_SEARCH = '/character-search';
+  static const DAILY_QUEST = '/daily-quest';
 }

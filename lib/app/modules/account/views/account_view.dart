@@ -202,6 +202,13 @@ class _AccountViewState extends State<AccountView> {
     return Column(
       children: [
         _buildMenuItem(
+          icon: Iconsax.task_square,
+          title: 'Nhiệm vụ hàng ngày',
+          subtitle: 'Hoàn thành nhiệm vụ nhận thưởng',
+          onTap: () => Get.toNamed('/daily-quest'),
+        ),
+        SizedBox(height: 12.h),
+        _buildMenuItem(
           icon: Iconsax.user_edit,
           title: 'Quản lý tài khoản',
           subtitle: 'Đổi tên và ảnh đại diện',

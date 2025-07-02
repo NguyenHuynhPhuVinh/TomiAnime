@@ -10,6 +10,8 @@ import '../../../services/streaming_data_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/jikan_api_service.dart';
+import '../../../services/daily_quest_service.dart';
+import '../../../models/daily_quest_model.dart';
 import '../../../models/anime_watch_status_model.dart';
 import '../../../utils/notification_helper.dart';
 import '../utils/anime_utils.dart';
@@ -36,6 +38,9 @@ class AnimeDetailModal {
     }
     print('   ─────────────────────────────────');
 
+    // Đánh dấu nhiệm vụ xem thông tin anime
+    _markViewAnimeInfoQuest();
+
     showModalBottomSheet(
       context: Get.context!,
       backgroundColor: Colors.transparent,
@@ -53,6 +58,22 @@ class AnimeDetailModal {
         ),
       ),
     );
+  }
+
+  /// Đánh dấu nhiệm vụ xem thông tin anime
+  static Future<void> _markViewAnimeInfoQuest() async {
+    try {
+      final authService = AuthService.instance;
+      if (!authService.isLoggedIn) return;
+
+      final questService = DailyQuestService.instance;
+      final uid = authService.currentUser!.uid;
+
+      await questService.updateQuestProgress(uid, QuestType.viewAnimeInfo);
+      print('✅ Marked view anime info quest');
+    } catch (e) {
+      print('❌ Error marking view anime info quest: $e');
+    }
   }
 }
 
