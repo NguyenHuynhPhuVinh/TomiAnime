@@ -28,6 +28,8 @@ import '../modules/gacha/bindings/gacha_binding.dart';
 import '../modules/gacha/views/gacha_view.dart';
 import '../modules/account/bindings/account_binding.dart';
 import '../modules/account/views/account_view.dart';
+import '../modules/info/bindings/info_binding.dart';
+import '../modules/info/views/info_view.dart';
 
 part 'app_routes.dart';
 
@@ -115,6 +117,12 @@ class AppPages {
       name: _Paths.ACCOUNT,
       page: () => const AccountView(),
       binding: AccountBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.INFO,
+      page: () => const InfoView(),
+      binding: InfoBinding(),
       middlewares: [AuthMiddleware()],
     ),
   ];

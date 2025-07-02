@@ -93,42 +93,48 @@ class AccountView extends GetView<AccountController> {
               width: 1,
             ),
           ),
-          child: Column(
+          child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
                   gradient: AppDecorations.radialGradientWithColor(AppColors.accountTheme),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Iconsax.profile_circle,
-                  size: 60.r,
+                  size: 40.r,
                   color: AppColors.accountTheme,
                 ),
               ),
-              SizedBox(height: 16.h),
-              Text(
-                userModel?.displayName ?? user.displayName ?? 'Người dùng',
-                style: AppTextStyles.h4,
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                userModel?.email ?? user.email ?? 'email@example.com',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      userModel?.displayName ?? user.displayName ?? 'Người dùng',
+                      style: AppTextStyles.h4,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      userModel?.email ?? user.email ?? 'email@example.com',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
               if (snapshot.connectionState == ConnectionState.waiting)
-                Padding(
-                  padding: EdgeInsets.only(top: 8.h),
-                  child: SizedBox(
-                    width: 20.w,
-                    height: 20.w,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.accountTheme),
-                    ),
+                SizedBox(
+                  width: 20.w,
+                  height: 20.w,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.accountTheme),
                   ),
                 ),
             ],
@@ -142,19 +148,6 @@ class AccountView extends GetView<AccountController> {
     return Column(
       children: [
         _buildMenuItem(
-          icon: Iconsax.setting_2,
-          title: 'Cài đặt',
-          subtitle: 'Tùy chỉnh ứng dụng',
-          onTap: () {
-            Get.snackbar(
-              'Thông báo',
-              'Tính năng đang phát triển',
-              snackPosition: SnackPosition.BOTTOM,
-            );
-          },
-        ),
-        SizedBox(height: 12.h),
-        _buildMenuItem(
           icon: Iconsax.heart,
           title: 'Anime của tôi',
           subtitle: 'Quản lý danh sách anime',
@@ -163,15 +156,9 @@ class AccountView extends GetView<AccountController> {
         SizedBox(height: 12.h),
         _buildMenuItem(
           icon: Iconsax.info_circle,
-          title: 'Về ứng dụng',
-          subtitle: 'Thông tin phiên bản',
-          onTap: () {
-            Get.snackbar(
-              'TomiAnime',
-              'Phiên bản 1.0.0\nPhát triển bởi TomiSakae',
-              snackPosition: SnackPosition.BOTTOM,
-            );
-          },
+          title: 'Thông tin',
+          subtitle: 'Về ứng dụng và nhà phát triển',
+          onTap: () => Get.toNamed('/info'),
         ),
       ],
     );
