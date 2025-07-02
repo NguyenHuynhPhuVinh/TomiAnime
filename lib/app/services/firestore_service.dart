@@ -76,7 +76,14 @@ class FirestoreService extends GetxService {
   }
 
   /// Cập nhật thông tin user
-  Future<bool> updateUser(String uid, {String? displayName, String? avatarUrl}) async {
+  Future<bool> updateUser(String uid, {
+    String? displayName,
+    String? avatarUrl,
+    int? level,
+    int? exp,
+    int? gold,
+    int? diamond,
+  }) async {
     try {
       final updateData = <String, dynamic>{};
 
@@ -86,6 +93,22 @@ class FirestoreService extends GetxService {
 
       if (avatarUrl != null) {
         updateData['avatarUrl'] = avatarUrl;
+      }
+
+      if (level != null) {
+        updateData['level'] = level;
+      }
+
+      if (exp != null) {
+        updateData['exp'] = exp;
+      }
+
+      if (gold != null) {
+        updateData['gold'] = gold;
+      }
+
+      if (diamond != null) {
+        updateData['diamond'] = diamond;
       }
 
       print('🔄 Update data: $updateData');
@@ -108,7 +131,240 @@ class FirestoreService extends GetxService {
     }
   }
 
+  // ==================== USER RESOURCES METHODS ====================
 
+  /// Cập nhật vàng của user
+  Future<bool> updateUserGold(String uid, int newGoldAmount) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .update({'gold': newGoldAmount});
+
+      print('✅ User gold updated: $newGoldAmount');
+      return true;
+    } catch (e) {
+      print('❌ Error updating user gold: $e');
+      return false;
+    }
+  }
+
+  /// Cập nhật kim cương của user
+  Future<bool> updateUserDiamond(String uid, int newDiamondAmount) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .update({'diamond': newDiamondAmount});
+
+      print('✅ User diamond updated: $newDiamondAmount');
+      return true;
+    } catch (e) {
+      print('❌ Error updating user diamond: $e');
+      return false;
+    }
+  }
+
+  /// Cập nhật level của user
+  Future<bool> updateUserLevel(String uid, int newLevel) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .update({'level': newLevel});
+
+      print('✅ User level updated: $newLevel');
+      return true;
+    } catch (e) {
+      print('❌ Error updating user level: $e');
+      return false;
+    }
+  }
+
+  /// Cập nhật EXP của user
+  Future<bool> updateUserExp(String uid, int newExp) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(uid)
+          .update({'exp': newExp});
+
+      print('✅ User EXP updated: $newExp');
+      return true;
+    } catch (e) {
+      print('❌ Error updating user EXP: $e');
+      return false;
+    }
+  }
+
+  /// Thêm EXP cho user với tự động level up (atomic operation)
+  Future<Map<String, dynamic>?> addExpToUser(String uid, int amount) async {
+    try {
+      Map<String, dynamic>? result;
+
+      await _firestore.runTransaction((transaction) async {
+        final userRef = _firestore.collection('users').doc(uid);
+        final userDoc = await transaction.get(userRef);
+
+        if (!userDoc.exists) {
+          throw Exception('User not found');
+        }
+
+        final userData = userDoc.data()!;
+        final currentLevel = userData['level'] ?? 1;
+        final currentExp = userData['exp'] ?? 0;
+
+        // Tính toán EXP mới
+        final newExp = currentExp + amount;
+
+        // Tính toán EXP cần thiết cho level tiếp theo
+        final expNeeded = currentLevel * 100 + (currentLevel - 1) * 50;
+
+        if (newExp >= expNeeded) {
+          // Level up!
+          final remainingExp = newExp - expNeeded;
+          final newLevel = currentLevel + 1;
+
+          transaction.update(userRef, {
+            'level': newLevel,
+            'exp': remainingExp,
+          });
+
+          result = {
+            'leveledUp': true,
+            'oldLevel': currentLevel,
+            'newLevel': newLevel,
+            'oldExp': currentExp,
+            'newExp': remainingExp,
+            'expGained': amount,
+          };
+        } else {
+          // Chỉ thêm EXP
+          transaction.update(userRef, {'exp': newExp});
+
+          result = {
+            'leveledUp': false,
+            'level': currentLevel,
+            'oldExp': currentExp,
+            'newExp': newExp,
+            'expGained': amount,
+          };
+        }
+      });
+
+      print('✅ Added $amount EXP to user. Result: $result');
+      return result;
+    } catch (e) {
+      print('❌ Error adding EXP to user: $e');
+      return null;
+    }
+  }
+
+  /// Thêm vàng cho user (atomic operation)
+  Future<bool> addGoldToUser(String uid, int amount) async {
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final userRef = _firestore.collection('users').doc(uid);
+        final userDoc = await transaction.get(userRef);
+
+        if (!userDoc.exists) {
+          throw Exception('User not found');
+        }
+
+        final currentGold = userDoc.data()?['gold'] ?? 0;
+        final newGold = currentGold + amount;
+
+        transaction.update(userRef, {'gold': newGold});
+      });
+
+      print('✅ Added $amount gold to user. New total calculated in transaction.');
+      return true;
+    } catch (e) {
+      print('❌ Error adding gold to user: $e');
+      return false;
+    }
+  }
+
+  /// Trừ vàng của user (atomic operation, không cho phép âm)
+  Future<bool> subtractGoldFromUser(String uid, int amount) async {
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final userRef = _firestore.collection('users').doc(uid);
+        final userDoc = await transaction.get(userRef);
+
+        if (!userDoc.exists) {
+          throw Exception('User not found');
+        }
+
+        final currentGold = userDoc.data()?['gold'] ?? 0;
+        if (currentGold < amount) {
+          throw Exception('Insufficient gold');
+        }
+
+        final newGold = currentGold - amount;
+        transaction.update(userRef, {'gold': newGold});
+      });
+
+      print('✅ Subtracted $amount gold from user.');
+      return true;
+    } catch (e) {
+      print('❌ Error subtracting gold from user: $e');
+      return false;
+    }
+  }
+
+  /// Thêm kim cương cho user (atomic operation)
+  Future<bool> addDiamondToUser(String uid, int amount) async {
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final userRef = _firestore.collection('users').doc(uid);
+        final userDoc = await transaction.get(userRef);
+
+        if (!userDoc.exists) {
+          throw Exception('User not found');
+        }
+
+        final currentDiamond = userDoc.data()?['diamond'] ?? 0;
+        final newDiamond = currentDiamond + amount;
+
+        transaction.update(userRef, {'diamond': newDiamond});
+      });
+
+      print('✅ Added $amount diamond to user. New total calculated in transaction.');
+      return true;
+    } catch (e) {
+      print('❌ Error adding diamond to user: $e');
+      return false;
+    }
+  }
+
+  /// Trừ kim cương của user (atomic operation, không cho phép âm)
+  Future<bool> subtractDiamondFromUser(String uid, int amount) async {
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final userRef = _firestore.collection('users').doc(uid);
+        final userDoc = await transaction.get(userRef);
+
+        if (!userDoc.exists) {
+          throw Exception('User not found');
+        }
+
+        final currentDiamond = userDoc.data()?['diamond'] ?? 0;
+        if (currentDiamond < amount) {
+          throw Exception('Insufficient diamond');
+        }
+
+        final newDiamond = currentDiamond - amount;
+        transaction.update(userRef, {'diamond': newDiamond});
+      });
+
+      print('✅ Subtracted $amount diamond from user.');
+      return true;
+    } catch (e) {
+      print('❌ Error subtracting diamond from user: $e');
+      return false;
+    }
+  }
 
   // ==================== ANIME WATCH STATUS METHODS ====================
 

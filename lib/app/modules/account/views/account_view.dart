@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/account_controller.dart';
+import '../../../controllers/user_resource_controller.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../models/user_model.dart';
@@ -58,6 +59,8 @@ class _AccountViewState extends State<AccountView> {
             children: [
               SizedBox(height: 20.h),
               _buildUserProfile(),
+              SizedBox(height: 20.h),
+              _buildUserResources(),
               SizedBox(height: 30.h),
               _buildMenuItems(),
               SizedBox(height: 30.h),
@@ -285,6 +288,183 @@ class _AccountViewState extends State<AccountView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildUserResources() {
+    return GetX<UserResourceController>(
+      init: UserResourceController(),
+      builder: (resourceController) {
+        final user = resourceController.currentUser.value;
+
+        if (user == null) {
+          return Container(
+            padding: EdgeInsets.all(20.w),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.accountTheme.withOpacity(0.1),
+                  AppColors.accountThemeLight.withOpacity(0.05),
+                ],
+              ),
+              borderRadius: AppDecorations.radiusL,
+              border: Border.all(
+                color: AppColors.accountTheme.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                'Đang tải thông tin...',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
+          );
+        }
+
+        return Container(
+          padding: EdgeInsets.all(20.w),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.accountTheme.withOpacity(0.1),
+                AppColors.accountThemeLight.withOpacity(0.05),
+              ],
+            ),
+            borderRadius: AppDecorations.radiusL,
+            border: Border.all(
+              color: AppColors.accountTheme.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            children: [
+              // Level và EXP
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      gradient: AppDecorations.radialGradientWithColor(AppColors.accountTheme),
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Iconsax.crown,
+                          color: AppColors.accountTheme,
+                          size: 16.sp,
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          'Level ${user.level}',
+                          style: AppTextStyles.buttonMedium.copyWith(
+                            color: AppColors.accountTheme,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    user.expDetails,
+                    style: AppTextStyles.captionLarge.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              // EXP Progress Bar
+              Container(
+                height: 8.h,
+                decoration: BoxDecoration(
+                  color: AppColors.surface.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4.r),
+                  child: LinearProgressIndicator(
+                    value: user.expProgressPercentage,
+                    backgroundColor: Colors.transparent,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.accountTheme),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.h),
+              // Vàng và Kim cương
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildResourceItem(
+                      icon: Iconsax.coin,
+                      label: 'Vàng',
+                      value: user.gold.toString(),
+                      color: Colors.amber,
+                    ),
+                  ),
+                  SizedBox(width: 16.w),
+                  Expanded(
+                    child: _buildResourceItem(
+                      icon: Iconsax.diamonds,
+                      label: 'Kim cương',
+                      value: user.diamond.toString(),
+                      color: Colors.cyan,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildResourceItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: color,
+            size: 24.sp,
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            value,
+            style: AppTextStyles.h4.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            label,
+            style: AppTextStyles.captionMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
       ),
     );
   }
